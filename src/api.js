@@ -1,8 +1,8 @@
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5055";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://backendarabicappupdated.vercel.app";
 console.log("API BASE_URL =", BASE_URL);
 
 export async function translateText({ text, direction }) {
-    const BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:5055";
+    const BASE = import.meta.env.VITE_API_BASE_URL || "https://backendarabicappupdated.vercel.app";
     const url = `${BASE}/api/translate`;
     console.log("Calling:", url);
 
@@ -22,7 +22,7 @@ export async function translateText({ text, direction }) {
 }
 
 export async function translateImage({ file, direction }) {
-    const base = import.meta.env.VITE_API_BASE_URL;
+    const base = import.meta.env.VITE_API_BASE_URL || "https://backendarabicappupdated.vercel.app";
 
     const fd = new FormData();
     fd.append("image", file);
