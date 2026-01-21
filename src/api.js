@@ -1,10 +1,10 @@
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://backendarabicappupdated.vercel.app";
-console.log("API BASE_URL =", BASE_URL);
+const BASE =
+    import.meta.env.VITE_API_BASE_URL || "https://backendarabicappupdated.vercel.app";
+
+console.log("API BASE_URL =", BASE);
 
 export async function translateText({ text, direction }) {
-    const BASE = import.meta.env.VITE_API_BASE_URL || "https://backendarabicappupdated.vercel.app";
     const url = `${BASE}/api/translate`;
-    console.log("Calling:", url);
 
     const res = await fetch(url, {
         method: "POST",
@@ -13,27 +13,23 @@ export async function translateText({ text, direction }) {
     });
 
     const data = await res.json().catch(() => ({}));
-
-    if (!res.ok) {
-        console.error("API error:", res.status, data);
-        throw new Error(data.error || `Request failed (${res.status})`);
-    }
+    if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
     return data;
 }
 
 export async function translateImage({ file, direction }) {
-    const base = import.meta.env.VITE_API_BASE_URL || "https://backendarabicappupdated.vercel.app";
+    const url = `${BASE}/api/translate-image`;
 
     const fd = new FormData();
     fd.append("image", file);
     fd.append("direction", direction);
 
-    const res = await fetch (`${base}/api/translate-image`, {
+    const res = await fetch(url, {
         method: "POST",
         body: fd,
     });
 
-    const data = await res.json();
+    const data = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error(data.error || "Image translation failed");
     return data;
 }
