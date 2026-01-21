@@ -1,8 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { getCombinedPhrases } from "../utils/phraseData";
 
-const phrases = useMemo(() => getCombinedPhrases(), []);
-
 // keep slugify consistent across app //
 function slugify(str) {
     return str
@@ -74,7 +72,7 @@ export default function FlashcardsPage() {
             categorySlug: slugify(cat.category),
         }))
     );
-    }, []);
+    }, [phrases]);
 
     const [mode, setMode] = useState("random"); //"random" | "category"
     const [selectedCategory, setSelectedCategory] = useState("");
@@ -151,7 +149,7 @@ const emoji =
         setShowFront(true);
     };
 
-    const scrollToTop = () => window.scrollTo({ top: 0, nehavior: "smooth" });
+    const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
 
     return (
         <div className="page">

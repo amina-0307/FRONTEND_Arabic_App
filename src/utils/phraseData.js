@@ -14,7 +14,7 @@ export function getCombinedPhrases() {
             transliteration: p.transliteration,
         });
         return acc;
-    } {});
+    }, {});
 
     const baseMap = new Map(basePhrases.map((c) => [c.category, { ...c }]));
 

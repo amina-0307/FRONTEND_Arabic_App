@@ -8,7 +8,7 @@ export function loadSavedPhrases() {
     }
 }
 
-    export function saevPhrase(newPhrase) {
+    export function savePhrase(newPhrase) {
         const list = loadSavedPhrases();
 
         const exists = list.some(
