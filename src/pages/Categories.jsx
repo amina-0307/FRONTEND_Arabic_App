@@ -1,8 +1,6 @@
 import { Link } from "react-router-dom";
-import { useMemo } from "react";
+import { useMemo, useEffect, useState } from "react";
 import { getCombinedPhrases } from "../utils/phraseData";
-
-const phrases = useMemo(() => getCombinedPhrases(), []);
 
 function slugify(str) {
     return str
@@ -29,6 +27,25 @@ const emojiMap = {
 };
 
 export default function Categories() {
+    // keep phrases in state so UI updates when saved phrases change //
+    const [phrases, setPhrases] = useState(() => getCombinedPhrases());
+    const refreshPhrases = () => setPhrases(getCombinedPhrases());
+
+    useEffect(() => {
+        const onStorage = (e) => {
+            if (e.key === "savedPhrases") refreshPhrases();
+        };
+        const onSavedUpdated = () => refreshPhrases();
+
+        window.addEventListener("storage", onStorage);
+        window.addEventListener("savedPhrasesUpdated", onSavedUpdated);
+
+        return () => {
+            window.removeEventListener("storage", onStorage);
+            window.removeEventListener("savedPhrasesUpdated", onSavedUpdated);
+        };
+    }), [];
+    
     const categories = useMemo(() => phrases.map((c) => c.category), []);
 
     return (

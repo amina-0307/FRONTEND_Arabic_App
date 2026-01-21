@@ -1,8 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { getCombinedPhrases } from "../utils/phraseData";
 
-const phrases = useMemo(() => getCombinedPhrases(), []);
-
 // keep slugify consistent across app //
 function slugify(str) {
     return str
@@ -30,6 +28,25 @@ function sampleN(arr, n) {
 }
 
 export default function QuizPage() {
+    // phrases in state so UI updates is saved phrases change //
+    const [phrases, setPhrases] = useState(() => getCombinedPhrases());
+    const refreshPhrases = () => setPhrases(getCombinedPhrases());
+
+    useEffect(() => {
+        const onStorage = (e) => {
+            if (e.key === "savedPhrases") refreshPhrases();
+        };
+        const onSavedUpdated = () => refreshPhrases();
+
+        window.addEventListener("storage", onStorage);
+        window.addEventListener("savedPhrasesUpdated", onSavedUpdated);
+
+        return () => {
+            window.removeEventListener("storage", onStorage);
+            window.removeEventListener("savedPhrasesUpdated", onSavedUpdated);
+        };
+    }, []);
+
     //Flatten phrases into one deck of cards //
     const allCards = useMemo(() => {
         return phrases.flatMap((cat) =>
@@ -39,9 +56,9 @@ export default function QuizPage() {
                 categorySlug: slugify(cat.category),
             }))
         );
-    }, []);
+    }, [phrases]);
 
-    const categories = useMemo(() => phrases.map((c) => c.category), []);
+    const categories = useMemo(() => phrases.map((c) => c.category), [phrases]);
 
     //QUIZ SETUP //
     const [stage, setStage] = useState("setup"); //"setup" | "quiz" | "results" //
