@@ -1,0 +1,833 @@
+[
+
+{
+    "category": "Greetings",
+    "phrases": [
+        {
+            "english": "Hello",
+            "arabic": "مرحبا",
+            "transliteration": "Marhabā"
+        },
+
+        {
+            "english": "Peace be upon you",
+            "arabic": "السلام عليكم",
+            "transliteration": "As-salāmu 'alaykum"
+        },
+
+        {
+            "english": "And peace be upon you too",
+            "arabic": "وعليكم السلام",
+            "transliteration": "Wa 'alaykum as-salām"
+        },
+
+        {
+            "english": "Good morning",
+            "arabic": "صباح الخير",
+            "transliteration": "Șabāh al-khayr"
+        },
+
+        {
+            "english": "Good evening",
+            "arabic": "مساء الخير",
+            "transliteration": "Masā al-khayr"
+        },
+
+        {
+            "english": "Good night",
+            "arabic": "تصبح على خير",
+            "transliteration": "Tușbih 'ala khayr"
+        },
+
+        {
+            "english": "How are you?",
+            "arabic":"كيف حالك",
+            "transliteration": "Kayfa hāluka? (M) / Kayfa hāluki? (F)"
+        },
+
+        {
+            "english": "I'm fine, thank you",
+            "arabic": "أنا بخير، شكراً",
+            "transliteration": "Anā bikhayr, shukran"
+        },
+
+        {
+            "english": "What is your name?",
+            "arabic": "ما اسمك؟",
+            "transliteration": "Mā ismuka? (M) / Mā ismuki? (F)"
+        },
+
+        {
+            "english": "My name is...",
+            "arabic": "اسمي",
+            "transliteration": "Ismī ..."
+        },
+
+        {
+            "english": "Nice to meet you",
+            "arabic": "تشرفت بلقائك",
+            "transliteration": "Tasharaftu biliqā'ik"
+        },
+
+        {
+            "english": "Goodbye",
+            "arabic": "مع السلامة",
+            "transliteration": "Ma'a as-salāmah"
+        }
+    ]
+},
+
+{
+    "category": "Directions",
+    "phrases": [
+        {
+            "english": "Where is ...?",
+            "arabic": "أين …؟",
+            "transliteration": "Ayna ...?"
+        },
+
+        {
+            "english": "Where is the Mosque?",
+            "arabic": "أين المسجد؟",
+            "transliteration": "Ayna al-Masjid?"
+        },
+
+        {
+            "english": "Where is the hotel?",
+            "arabic": "أين الفندق؟",
+            "transliteration": "Ayna al-funduq?"
+        },
+
+        {
+            "english": "Where is the bathroom?",
+            "arabic": "أين الحمّام؟",
+            "transliteration": "Ayna al-hammām?"
+        },
+
+        {
+            "english": "Left",
+            "arabic": "يسار",
+            "transliteration": "Yasār"
+        },
+
+        {
+            "english": "Right",
+            "arabic": "يمين",
+            "transliteration": "Yamīn"
+        },
+
+        {
+            "english": "Straight ahead",
+            "arabic": "إلى الأمام",
+            "transliteration": "Ilā al-amām"
+        },
+
+        {
+            "english": "Near",
+            "arabic": "قريب",
+            "transliteration": "Qarīb"
+        },
+
+        {
+            "english": "Far",
+            "arabic": "بعيد",
+            "transliteration": "Ba'īd"
+        },
+
+        {
+            "english": "I am lost",
+            "arabic": "أنا تائه",
+            "transliteration": "Anā tā'ih"
+        },
+
+        {
+            "english": "Can you show me on the map?",
+            "arabic": "هل يمكنك أن تريني على الخريطة؟",
+            "transliteration": "Hal yumkinuka an turīnī 'alā al-kharītah?"
+        },
+
+        {
+            "english": "Is it walking distance?",
+            "arabic": "هل يمكن الذهاب سيراً على الأقدام؟",
+            "transliteration": "Hal yumkin adh-dhahāb sayran 'alā al-aqdām?"
+        }
+    ]
+},
+
+{
+    "category": "Money & Shopping",
+    "phrases": [
+        {
+            "english": "How much is this?",
+            "arabic": "بكم هذا؟",
+            "transliteration": "Bikam hādhā?"
+        },
+
+        {
+            "english": "This is expensive",
+            "arabic": "هذا غالٍ",
+            "transliteration": "Hādhā ghālin"
+        },
+
+        {
+            "english": "Can you reduce the price?",
+            "arabic": "هل يمكنك خفض السعر؟",
+            "transliteration": "Hal yumikuna khadd as-si'r?"
+        },
+
+        {
+            "english": "Do you have something cheaper?",
+            "arabic": "هل لديك شيء أرخص؟",
+            "transliteration": "Hal ladayka shay'un arkhās?"
+        },
+
+        {
+            "english": "I will take it",
+            "arabic": "سآخذه",
+            "transliteration": "Sa'akhudhuh"
+        },
+
+        {
+            "english": "Do you accept card?",
+            "arabic": "هل تقبلون البطاقة؟",
+            "transliteration": "Hal taqbalūna al-bitāqah?"
+        },
+
+        {
+            "english": "Cash only?",
+            "arabic": "نقداً فقط؟",
+            "transliteration": "Naqdan faqat?"
+        },
+
+        {
+            "english": "Where is the ATM?",
+            "arabic": "أين جهاز الصرّاف الآلي؟",
+            "transliteration": "Ayna jihāz as-sarrāf al-ālī?"
+        },
+
+        {
+            "english": "Receipt, please",
+            "arabic": "الفاتورة من فضلك",
+            "transliteration": "Al-fātūrah min fadlik"
+        },
+
+        {
+            "english": "Can I try it on?",
+            "arabic": "هل يمكنني قياسه؟",
+            "transliteration": "Hal yumkinunī qiyāsuh?"
+        },
+
+        {
+            "english": "Do you have a different size?",
+            "arabic": "هل لديك مقاس آخر؟",
+            "transliteration": "Hal ladayka maqās ākhār?"
+        },
+
+        {
+            "english": "Do you have it in another colour?",
+            "arabic": "هل يوجد بلون آخر؟",
+            "transliteration": "Hal yūjad bi-lawn ākhār?"
+        }
+    ]
+},
+
+{
+    "category": "Prayer Phrases",
+    "phrases": [
+        {
+            "english": "Where is the prayer room?",
+            "arabic": "أين مصلى الصلاة؟",
+            "transliteration": "Ayna musallā as-salāh?"
+        },
+
+        {
+            "english": "Where is the Mosque?",
+            "arabic": "أين المسجد؟",
+            "transliteration": "Ayna al-Masjid?"
+        },
+
+        {
+            "english": "What time is the next prayer?",
+            "arabic": "متى وقت الصلاة القادمة؟",
+            "transliteration": "Matā waqt as-salāh al-qādimah?"
+        },
+
+        {
+            "english": "I need to make Wudū (ablution)",
+            "arabic": "أحتاج أن أتوضأ",
+            "transliteration": "Ahtāju an atawadda'"
+        },
+
+        {
+            "english": "Where is the Wudū (ablution) area?",
+            "arabic": "أين مكان الوضوء؟",
+            "transliteration": "Ayna makān al-wudū'?"
+        },
+
+        {
+            "english": "Is there a women's area?",
+            "arabic": "هل يوجد مكان للنساء؟",
+            "transliteration": "Hal yūjad makān lil-nisā'?"
+        },
+
+        {
+            "english": "Is there a men's area?",
+            "arabic": "هل يوجد مكان للرجال؟",
+            "transliteration": "Hal yūjad makān lir-rijāl?"
+        },
+
+        {
+            "english": "May Allah (God) reward you with goodness",
+            "arabic": "جزاك الله خيراً",
+            "transliteration": "Jazāk Allāhu khayran"
+        },
+
+        {
+            "english": "If Allah (God) wills",
+            "arabic": "إن شاء الله",
+            "transliteration": "In shā' Allāh"
+        },
+
+        {
+            "english": "All praise is due to Allah (God)",
+            "arabic": "الحمد لله",
+            "transliteration": "Al-hamdu lillāh"
+        },
+
+        {
+            "english": "Glory be to Allah (God)",
+            "arabic": "سبحان الله",
+            "transliteration": "Subhān Allāh"
+        },
+
+        {
+            "english": "I seek forgiveness from Allah (God)",
+            "arabic": "أستغفر الله",
+            "transliteration": "Astaghfirullāh"
+        }
+    ]
+},
+
+{
+    "category": "Customs & Etiquette",
+    "phrases": [
+        {
+            "english": "Is this appropriate to wear here?",
+            "arabic": "هل هذا اللباس مناسب هنا؟",
+            "transliteration": "Hal hādhā al-libās munāsib hunā?"
+        },
+
+        {
+            "english": "Do I need to wear an abaya?",
+            "arabic": "هل يجب أن أرتدي عباءة؟",
+            "transliteration": "Hal yajibu an artadī 'abāyah?"
+        },
+
+        {
+            "english": "Should i remove my shoes?",
+            "arabic": "هل يجب أن أخلع حذائي؟",
+            "transliteration": "Hal yajibu an akhla' hidhā'ī?"
+        },
+
+        {
+            "english": "Is it okay to take photos here?",
+            "arabic": "هل يسمح بالتصوير هنا؟",
+            "transliteration": "Hal yusmah bi-t-taswīr hunā?"
+        },
+
+        {
+            "english": "Thank you for your hospitality",
+            "arabic": "شكراً على حسن الضيافة",
+            "transliteration": "Shukran 'alā husn ad-diyāfah"
+        },
+
+        {
+            "english": "Sorry, I didn't know",
+            "arabic": "آسف، لم أكن أعلم",
+            "transliteration": "Āsif, lam akun a'lam"
+        },
+
+        {
+            "english": "Excuse me",
+            "arabic": "عفواً",
+            "transliteration": "'Afwan"
+        },
+
+        {
+            "english": "Please",
+            "arabic": "من فضلك",
+            "transliteration": "Min fadlik"
+        },
+
+        {
+            "english": "Is this allowed?",
+            "arabic": "هل هذا مسموح؟",
+            "transliteration": "Hal hādhā masmūh?"
+        },
+
+        {
+            "english": "Can I sit here?",
+            "arabic": "هل يمكنني الجلوس هنا؟",
+            "transliteration": "Hal yumkiunī al-julūs hunā?"
+        }
+
+    ]
+},
+
+{
+    "category": "Food - General",
+    "phrases": [
+        {
+            "english": "I am hungry",
+            "arabic": "أنا جائع",
+            "transliteration": "Anā jā'i'"
+        },
+
+        {
+            "english": "Where is a good restaurant?",
+            "arabic":" أين يوجد مطعم جيد؟",
+            "transliteration": "Ayna yūjad mat'am jayyid?"
+        },
+
+        {
+            "english": "Can I see the menu?",
+            "arabic": "هل يمكنني رؤية قائمة الطعام؟",
+            "transliteration": "Hal yumkinunī ru'yat qā'imat at-ta'ām?"
+        },
+
+        {
+            "english": "Do you have an English menu?",
+            "arabic": "هل لديكم قائمة طعام بالإنجليزية؟",
+            "transliteration": "Hal ladaykum qā'imat ta'ām bil-inglīziyyah?"
+        },
+
+        {
+            "english": "This is delicious",
+            "arabic": "هذا لذيذ",
+            "transliteration": "Hādhā ladhīdh"
+        },
+
+        {
+            "english": "I am full",
+            "arabic": "أنا شبعان",
+            "transliteration": "Anā shab'ān"
+        },
+
+        {
+            "english": "I have an allergy to  ...",
+            "arabic": "عندي حساسية من …",
+            "transliteration": "'Indī hasāsiyyah min..."
+        },
+
+        {
+            "english": "I have an allergy to nuts",
+            "arabic": "عندي حساسية من المكسرات",
+            "transliteration": "'Indī hasāsiyyah min al-mukassarāt"
+        },
+
+        {
+            "english": "No spice, please",
+            "arabic": "بلا فلفل حار من فضلك",
+            "transliteration": "Bilā filfil hār min fadlik"
+        },
+
+        {
+            "english": "A little spicy only",
+            "arabic": "قليل من الحار فقط",
+            "transliteration": "Qalīl min al-hār faqat"
+        },
+
+        {
+            "english": "Can I have this to take away?",
+            "arabic": "هل يمكن أن آخذه سفراً؟",
+            "transliteration": "Hal yumkin an ākhudhahu safaran?"
+        }
+    ]
+},
+
+{
+    "category": "Food - Meat",
+    "phrases": [
+        {
+
+            "english": "Chicken",
+            "arabic": "دجاج",
+            "transliteration": "Dajājj"
+        },
+
+        {
+            "english": "Beef",
+            "arabic": "لحم بقر",
+            "transliteration": "Lahm baqar"
+        },
+
+        {
+            "english": "Lamb",
+            "arabic": "لحم غنم",
+            "transliteration": "Lahm ghanam"
+        },
+
+        {
+            "english": "No meat, please",
+            "arabic": "بلا لحم من فضلك",
+            "transliteration": "Bilā lahm min fadlik"
+        },
+
+        {
+            "english": "Grilled",
+            "arabic": "مشوي",
+            "transliteration": "Mashwī"
+        },
+
+        {
+            "english": "Fried",
+            "arabic": "مقلي",
+            "transliteration": "Maqlī"
+        },
+
+        {
+            "english": "Without bones, please",
+            "arabic": "من دون عظام من فضلك",
+            "transliteration": "Min dūn 'izām min fadlik"
+        }
+    ]
+},
+
+{
+    "category": "Food - Drinks",
+    "phrases": [
+        {
+            "english": "Water",
+            "arabic": "ماء",
+            "transliteration": "Mā'"
+        },
+
+        {
+             "english": "Bottled water",
+             "arabic": "ماء معبأ",
+             "transliteration": "Mā' mu'abba'"
+        },
+
+        {
+            "english": "Cold water",
+            "arabic": "ماء بارد",
+            "transliteration": "Mā' bārid"
+        },
+
+        {
+            "english": "Room temperature water",
+            "arabic": "ماء بدرجة الغرفة",
+            "transliteration": "Mā' bidarajat al-ghurfah"
+        },
+
+        {
+            "english": "Tea",
+            "arabic": "شاي",
+            "transliteration": "Shāy"
+        },
+
+        {
+            "english": "Tea with milk",
+            "arabic": "شاي بالحليب",
+            "transliteration": "Shāy bil-halīb"
+        },
+
+        {
+            "english": "Coffee",
+            "arabic": "قهوة",
+            "transliteration": "Qahwah"
+        },
+
+        {
+            "english": "Fresh juice",
+            "arabic": "عصير طازج",
+            "transliteration": "'Asīr tāzaj"
+        },
+
+        {
+            "english": "Without sugar",
+            "arabic": "بلا سكر",
+            "transliteration": "Bilā sukkar"
+        },
+
+        {
+            "english": "With a little sugar",
+            "arabic": "قليل من السكر",
+            "transliteration": "Qalīl min as-sukkar"
+        },
+
+        {
+            "english": "With ice",
+            "arabic": "مع ثلج",
+            "transliteration": "Ma'a thalj"
+        }
+
+    ]
+},
+
+{
+    "category": "Food - Fruit",
+    "phrases": [
+        {
+            "english": "Fruit",
+            "arabic": "فاكهة",
+            "transliteration": "Fākihah"
+        },
+
+        {
+            "english": "Apple",
+            "arabic": "تفاح",
+            "transliteration": "Tuffāh"
+        },
+
+        {
+            "english": "Banana",
+            "arabic": "موز",
+            "transliteration": "Mawz"
+        },
+
+        {
+            "english": "Orange",
+            "arabic": "برتقال",
+            "transliteration": "Burtuqāl"
+        },
+
+        {
+            "english": "Grapes",
+            "arabic": "عنب",
+            "transliteration": "'Inab"
+        },
+
+        {
+            "english": "Strawberries",
+            "arabic": "فراولة",
+            "transliteration": "Farāwilah"
+        },
+
+        {
+            "english": "Dates",
+            "arabic": "تمر",
+            "transliteration": "Tamr"
+        },
+
+        {
+            "english": "Pomegranate",
+            "arabic": "رمان",
+            "transliteration": "Rummān"
+        },
+
+        {
+            "english": "Watermelon",
+            "arabic": "بطيخ",
+            "transliteration": "Battīkh"
+        },
+
+        {
+            "english": "Mango",
+            "arabic": "مانجو",
+            "transliteration": "Mānjū"
+        },
+
+        {
+            "english": "Nuts",
+            "arabic": "مكسرات",
+            "transliteration": "Mukassarāt"
+        }
+    ]
+},
+
+{
+    "category": "Airport",
+    "phrases": [
+        {
+            "english": "Where is the check-in counter?",
+            "arabic": "أين مكتب تسجيل الدخول؟",
+            "transliteration": "Ayna maktab tasjīl ad-dukhūl?"
+        },
+
+        {
+            "english": "Where is the departure gate?",
+            "arabic": "أين بوابة المغادرة؟",
+            "transliteration": "Ayna bawābat al-mughādarah?"
+        },
+
+        {
+            "english": "Where is baggage claim?",
+            "arabic": "أين مكان استلام الأمتعة؟",
+            "transliteration": "Ayna makān istilām al-amti'ah"
+        },
+
+        {
+            "english": "I have a connecting flight",
+            "arabic": "عندي رحلة متابعة",
+            "transliteration": "Indī rihlah mutāba'ah"
+        },
+
+        {
+            "english": "Where is passport control?",
+            "arabic": "أين الجوازات؟",
+            "transliteration": "Ayna al-jawāzāt?"
+        },
+
+        {
+            "english": "Here is my passport",
+            "arabic": "هذا جوازي",
+            "transliteration": "Hādhā jawāzī"
+        },
+
+        {
+            "english": "Where is security check?",
+            "arabic": "أين التفتيش الأمني؟",
+            "transliteration": "Ayna at-taftīsh al-amnī?"
+        },
+
+        {
+            "english": "My flight is delayed",
+            "arabic": "رحلتي متأخرة",
+            "transliteration": "Rihlatī muta'akh-khirah"
+        },
+
+        {
+            "english": "Where is the boarding gate?",
+            "arabic": "أين بوابة الصعود إلى الطائرة؟",
+            "transliteration": "Ayna bawābat as-su'ūd ilā t-tā'irah?"
+        },
+
+        {
+            "english": "Is this the queue for this flight?",
+            "arabic": "هل هذا الطابور لهذه الرحلة؟",
+            "transliteration": "Hal hādhā at-tābūr li-hādhihi r-rihlah?"
+        }
+    ]
+},
+
+{
+    "category": "Luggage & Baggage",
+    "phrases": [
+        {
+            "english": "Where is the baggage claim?",
+            "arabic": "أين مكان استلام الأمتعة؟",
+            "transliteration": "Ayna makān istilām al-amti'ah?"
+        },
+
+        {
+            "english": "My suitcase is missing",
+            "arabic": "حقيبتي مفقودة",
+            "transliteration": "Haqībatī mafqūdah"
+        },
+
+        {
+            "english": "My baggage is delayed",
+            "arabic": "أمتعتي متأخرة",
+            "transliteration": "Amti'atī muta'akh-khirah"
+        },
+
+        {
+            "english": "This is my bag",
+            "arabic": "هذه حقيبتي",
+            "transliteration": "Hādhihī haqībatī"
+        },
+
+        {
+            "english": "This is not my bag",
+            "arabic": "هذه ليست حقيبتي",
+            "transliteration": "Hādhihī laysat haqībatī"
+        },
+
+        {
+            "english": "Where can I report lost luggage?",
+            "arabic": "أين يمكنني الإبلاغ عن أمتعة مفقودة؟",
+            "transliteration": "Ayna yumkinunī al-iblāgh 'an amti'ah mafqūdah?"
+        },
+
+        {
+            "english": "Carry-on baggage",
+            "arabic": "حقيبة يد",
+            "transliteration": "Haqībat yad"
+        },
+
+        {
+            "english": "Checked baggage",
+            "arabic": "أمتعة شحن",
+            "transliteration": "Amti'at sh-shn"
+        },
+
+        {
+            "english": "Fragile",
+            "arabic": "قابل للكسر",
+            "transliteration": "Qābil lil-kasr"
+        },
+
+        {
+            "english": "Overweight luggage",
+            "arabic": "أمتعة زائدة الوزن",
+            "transliteration": "Amti'ah zā'idat al-wazn"
+        }
+    ]
+},
+
+{
+    "category": "Emergency",
+    "phrases": [
+        {
+            "english": "Help!",
+            "arabic": "النجدة!",
+            "transliteration": "An-najdah!"
+        },
+
+        {
+            "english": "Call an ambulance",
+            "arabic": "اتصل بالإسعاف",
+            "transliteration": "Ittasail bil-is'āf"
+        },
+
+        {
+            "english": "Call the police",
+            "arabic": "اتصل بالشرطة",
+            "transliteration": "Ittasil bish-shurtah"
+        },
+
+        {
+            "english": "I need a doctor",
+            "arabic": "أحتاج طبيباً",
+            "transliteration": "Ahtāju tabīban"
+        },
+
+        {
+            "english": "I am sick",
+            "arabic": "أنا مريض",
+            "transliteration": "Anā marīd"
+        },
+
+        {
+            "english": "I have an allergy",
+            "arabic": "عندي حساسية",
+            "transliteration": "Indī hasāsiyyah"
+        },
+
+        {
+            "english": "I lost my passport",
+            "arabic": "أضعت جوازي",
+            "transliteration": "Ada'tu jawāzī"
+        },
+        {
+            "english": "I lost my phone",
+            "arabic": "أضعت هاتفي",
+            "transliteration": "Ada'tu hātifī"
+        },
+
+        {
+            "english": "I need help",
+            "arabic": "أحتاج مساعدة",
+            "transliteration": "Ahtāju musā'adah"
+        },
+
+        {
+            "english": "Where is the nearest hospital?",
+            "arabic": "أين أقرب مستشفى؟",
+            "transliteration": "Ayna aqrab mustashfā?"
+        }
+    ]
+}
+
+]

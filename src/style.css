@@ -1,0 +1,590 @@
+/* Theme tokens */
+
+/* LIGHT (default) */
+:root {
+  --bg: #ffffff;
+  --text: #111111;
+  --muted: rgba(0,0,0,0.65);
+
+  --card-bg: #ffffff;
+  --card-border: rgba(0,0,0,0.14);
+
+  --control-bg: rgba(255,255,255,0.92);
+  --control-border: rgba(0,0,0,0.22);
+
+  --border: rgba(0,0,0,0.18);
+  --surface: rgba(255,255,255,0.92);
+
+  /* make stripes actually visible in light mode */
+  --stripeA: rgba(0,0,0,0.06);
+  --stripeB: rgba(0,0,0,0.025);
+
+  --link: #0b57d0;
+}
+
+/* DARK */
+html[data-theme="dark"] {
+  --bg: #0f1216;
+  --text: #f2f2f2;
+  --muted: rgba(255,255,255,0.72);
+
+  --card-bg: rgba(255,255,255,0.06);
+  --card-border: rgba(255,255,255,0.18);
+
+  --control-bg: rgba(255,255,255,0.12);
+  --control-border: rgba(255,255,255,0.22);
+
+  --border: rgba(255,255,255,0.22);
+  --surface: rgba(255,255,255,0.12);
+
+  /* subtle but visible stripes in dark mode */
+  --stripeA: rgba(255,255,255,0.06);
+  --stripeB: rgba(255,255,255,0.02);
+
+  --link:#7fb2ff;
+}
+
+/* Base */
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  color: var(--text);
+  background-color: var(--bg);
+  background-image: repeating-linear-gradient(
+    90deg,
+    var(--stripeA) 0px,
+    var(--stripeA) 28px,
+    var(--stripeB) 28px,
+    var(--stripeB) 0px,
+  );
+}
+
+/* Layout */
+.page {
+  width: 980px;
+  margin: 0 auto;
+  padding: 18px 18px 60px;
+}
+
+/* Navbar */
+.navbar {
+  padding: 0; /* or 4px 0; */
+  margin: 0;
+}
+
+.nav-links {
+  margin: 0;
+  padding: 0;
+}
+
+.navlink {
+  text-decoration: none;
+  font-weight: 600;
+}
+
+a, .navlink {
+  color: var(--link);
+}
+
+/* Top Bar */
+.topbar {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  align-items: center;
+  margin-top: 18px;
+}
+
+/* Fixed Back-to-top */
+.toTopFixed {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  z-index: 9999;
+  border: 1px solid var(--control-border);
+  font-size: 12px;
+  padding: 6px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  background: var(--control-bg);
+  color: var(--text);
+}
+
+.iconBtn {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid var(--control-border);
+  background: var(--control-bg);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.input {
+  flex: 1;
+  max-width: 600px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--control-border);
+  background: var(--control-bg);
+  color: var(--text);
+}
+
+.select {
+  flex: 1;
+  max-width: 600px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--control-border);
+  background: var(--control-bg);
+  color: var(--text);
+
+  /* NEW */
+  font-size: 16px;
+}
+
+/* Headings */
+.h1 {
+  font-family: Georgia, "Times New Roman", Times, serif;
+  text-align: center;
+  font-size: clamp(42px, 6.2vw, 64px);
+  margin: 10px 0 16px;
+  letter-spacing: 0.2px;
+}
+
+.hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 16px 0 22px;
+}
+
+.h2 {
+  font-family: Georgia, "Times New Roman", Times, serif;
+  text-align: center;
+  font-size: clamp(26px, 4.8vw, 38px);
+  margin: 6px 0 10px;
+}
+
+.sectionTitle {
+  font-family: Georgia, "Times New Roman", Times, serif;
+  font-size: clamp(22px, 4.0vw, 32px); /* slightly smaller */
+  margin: 28px 0 10px;
+}
+
+/* Cards */
+.card {
+  border: 1px solid var(--card-border);
+  background: var(--card-bg);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+  padding: 18px 18px;
+  margin: 14px auto;
+  max-width: 860px;
+}
+
+html[data-theme="dark"] .card {
+  box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+}
+
+.arabic {
+  font-family: "Geeza Pro", "Times New Roman", serif;
+  font-size: 44px;
+  margin: 2px 0 10px;
+  direction: rtl;
+  text-align: left;
+}
+
+.metaLine {
+  font-family: Georgia, "Times New Roman", Times, serif;
+  font-size: 22px;
+  margin: 6px 0;
+}
+
+.metaLabel {
+  font-weight: 700;
+}
+
+.metaMuted {
+  color: var(--muted);
+  font-style: italic;
+}
+
+/* Buttons */
+.btn {
+  display: inline-block;
+  border: 1px solid var(--border);
+  background: var(--control-bg);
+  color: var(--text);
+  border-radius: 999px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.center { text-align: center; }
+
+/* Categories page UI */
+.categoriesWrap{
+  max-width: 620px;
+  margin: 12px auto 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px; /* space between items */
+  padding: 8px 0 20px;
+}
+
+.categoryItem{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+
+  text-decoration: none;
+  font-family: Georgia, "Times New Roman", Times, serif;
+  font-size: 26px;
+  padding: 16px 18px;
+
+  border: 1px solid var(--card-border);
+  background: var(--card-bg);
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+}
+
+html[data-theme="dark"] .categoryItem{
+  box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+}
+
+.categoryIcon{
+  font-size: 28px;
+  line-height: 1;
+}
+
+.categoryText{
+  font-weight: 600;
+}
+
+.categoryList{
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+.categoryItem{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 18px 22px;
+  border-radius: 14px;
+  border: 1px solid var(--card-border);
+  background: var(--card-bg);
+  text-decoration: none;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.10);
+}
+
+.categoryEmoji{ font-size: 22px; }
+
+.categoryName{
+  font-family: Georgia, "Times New Roman", Times, serif;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+/* Slight hover polish */
+.categoryItem:hover{
+  transform: translateY(-1px);
+}
+
+.sectionEmoji{
+  font-size: 1em; /* matches the heading size */
+  margin-right: 10px;
+  line-height: 1;
+  vertical-align: middle;
+}
+
+/* Flashcards UI */
+.flashControls{
+  margin-top: 6px;
+}
+
+.flashRow{
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin: 10px 0;
+  flex-wrap: wrap;
+}
+
+/* Bigger meta line (all categories + card x/y) */
+.flashMeta{
+  display: flex;
+  justify-content: space-between;
+  max-width: 860px;
+  margin: 6px auto 12px;
+  font-size: 18px;
+}
+
+/* Bigger dropdown text (+ "searchy" feel on mac select) */
+.flashSelect{
+  font-size: 16px;
+  min-width: 360px;
+}
+
+/* the card itself */
+.flashCard{
+  width: 100%;
+  max-width: 860px;
+  margin: 12px auto 18px;
+  padding: 24px 22px;
+  border-radius: 14px;
+  border: 1px solid var(--card-border);
+  background: var(--card-bg);
+  color: var(--text); /* IMPORTANT: fixes dark mode text */
+  cursor: pointer;
+  display: block;
+  text-align: center;
+}
+
+.flashHint{
+  font-size: 13px;
+  opacity: 0.75;
+  margin-bottom: 12px;
+}
+
+/* Front: big english */
+.flashEnglish{
+  font-family: Georgia, "Times New Roman", Times, serif;
+  font-size: clamp(34px, 4.2vw, 46px);
+  font-weight: 700;
+  margin: 8px 0 14px;
+}
+
+/* Back: Arabic + transliteration */
+.flashArabic{
+  font-size: clamp(44px, 5.4vw, 60px);
+  margin: 8px 0 16px;
+  text-align: center;
+}
+
+.flashTransliteration{
+  font-family: Georgia, "Times New Roman", Times, serif;
+  font-size: 22px;
+  margin: 10px 0 10px;
+}
+
+.flashCategoryLine{
+  font-family: Georgia, "Times New Roman", Times, serif;
+  font-size: 20px;
+  opacity: 0.9;
+  margin-top: 10px;
+}
+
+/* Nav buttons row */
+.flashNav{
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-bottom: 40px;
+}
+
+.btn:disabled{
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.btnActive{
+  outline: 2px solid var(--control-border);
+}
+
+/* Global header (theme + home) */
+.pageHeader{
+  position: fixed;
+  width: 980px;
+  margin: 0 auto;
+  padding: 10px 10px 0; /* was 18px */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.pageHeaderInner{
+  width: 980px;
+  margin: 0 auto;
+  padding: 10px 18px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr; /* left / centre / right */
+  align-items: center;
+}
+
+.pageHeaderNav {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+
+  /* NEW: lock it to left edge of container */
+  justify-content: flex-start;
+}
+
+.headerLeft{ justify-self: start; }
+.headerCenter{
+  justify-self: center;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.headerRight{ justify-self: end; }
+
+.page{
+  width: 980px;
+  margin: 0 auto;
+  padding: 78px 18px 60px; /* was 18px; now leaves room for fixed header */
+}
+
+/* pill button style */
+.headerPill{
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--control-border);
+  background: var(--control-bg);
+  color: var(--text);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+/* icon button style (matches the vibes */
+.headerIconBtn{
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  border: 1px solid var(--control-border);
+  background: var(--control-bg);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.homeBtn{
+  padding: 6px 10px;
+  font-size: 13px;
+}
+
+.translatorRow {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.translator .input {
+  flex: 1;
+}
+
+/* Quiz ui */
+.QuizMeta{
+  display: flex;
+  justify-content: space-between;
+  max-width: 860px;
+  margin: 6px auto 12px;
+  font-size: 18px;
+}
+
+.QuizSetup .quizBlock{
+  margin: 14px 0 18px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+}
+.quizSetup .quizBlock:first-child{
+  border-top: none;
+  padding-top: 0;
+}
+
+.quizBlockTitle{
+  font-family: Georgia, "Times New Roman", Times, serif;
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.quizSelect{
+  margin-top: 8px;
+  width: 100%; max-width: 520px;
+  font-size: 16px;
+}
+
+.quizQuestion{
+  max-width: 860px;
+}
+
+.quizOptions{
+  display: grid;
+  grid-template-columns: 1fr;
+  gap:12px;
+  max-width: 860px;
+  margin: 12px auto 0;
+}
+
+.quizOpt{
+  text-align: left;
+  border-radius: 14px;
+  padding: 12px 16px;
+  font-size: 18px;
+  width: 100%;
+  max-width: 860px;
+}
+
+.quizOptCorrect{
+  outline: 2px solid rgba(46, 204, 113, 0.7);
+}
+
+.quizOptWrong{
+  outline: 2px solid rgba(231, 76, 60, 0.7);
+}
+
+/* Fireworks / confetti burst (simple + cutue) */
+.fireworks{
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.spark{
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  opacity: 0;
+  animation: pop 900ms ease-out forwards;
+  background: var(--link);
+  filter: blur(0.2px);
+}
+
+/* Multiple bursts at different spots */
+.s1{ left: 18%; top: 22%; animation-delay: 0ms; }
+.s2{ left: 30%; top: 35%; animation-delay: 120ms; }
+.s3{ left: 55%; top: 18%; animation-delay: 80ms; }
+.s4{ left: 70%; top: 32%; animation-delay: 160ms; }
+.s5{ left: 45%; top: 45%; animation-delay: 220ms; }
+.s6{ left: 82%; top: 22%; animation-delay: 300ms; }
+
+@keyframes pop{
+  0% { transform: scale(0.2); opacity: 0; }
+  15% { opacity: 1; }
+  100% { transform: scale(9); opacity: 0}
+}
+
+/* Mobile tweaks */
+@media (max-width: 560px) {
+  .page { width: 100% }
+  .topbar { flex-wrap: wrap; }
+  .input { max-width: 100% }
+  .select { width: 100% }
+}
+
+@media (max-width: 1020px){
+  .toTopFixed{
+    right: 14px;
+  }
+}
