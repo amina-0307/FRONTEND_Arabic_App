@@ -10,7 +10,7 @@ function tokenize(s) {
 
 export function suggestCategory({ english = "", arabic = "" }) {
     const engTokens = new Set(tokenize(english));
-    const arTokens = new Set(tokeize(arabic));
+    const arTokens = new Set(tokenize(arabic));
 
     let best = { cat: "Saved", score: 0 };
 
