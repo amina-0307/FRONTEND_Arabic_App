@@ -5,7 +5,7 @@ function read() {
     catch { return {}; }
 }
 function write(obj) {
-    localStorage.setItem(KEY, JSON.strongify(obj));
+    localStorage.setItem(KEY, JSON.stringify(obj));
 }
 
 export function cacheGet(cacheKey) {

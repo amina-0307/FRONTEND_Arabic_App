@@ -1,5 +1,5 @@
 const BASE =
-    import.meta.env.VITE_API_BASE_URL || "https://backendarabicappupdated.vercel.app";
+    import.meta.env.VITE_API_BASE_URL || "https://backendarabicappupdated.vercel.app/";
 
 console.log("API BASE_URL =", BASE);
 
