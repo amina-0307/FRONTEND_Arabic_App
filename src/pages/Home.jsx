@@ -196,34 +196,38 @@ function Home({ theme, toggleTheme }) {
 
     return (
         <div className="page">
-            <button className="toTopFixed" onClick={scrollToTop} title="Back to top">
-                ⬆️ Top
-            </button>
+            <div className="top-controls">
 
-            <div className="topbar">
-                <button className="iconBtn" onClick={toggleTheme} title="Toggle theme">
-                    {theme === "dark" ? "☀️" : "🌙"}
+                <div className="topbar">
+                    <button className="iconBtn theme-toggle" onClick={toggleTheme} title="Toggle theme">
+                        {theme === "dark" ? "☀️" : "🌙"}
+                    </button>
+
+                    <input
+                        className="input search-input"
+                        placeholder="Search phrases..."
+                        value={query}
+                        onChange={(e) => setQuery(e.target.value)}
+                    />
+                    <select
+                        className="select jump-select"
+                        value={jumpTo}
+                        onChange={(e) => handleJump(e.target.value)}
+                    >
+                        <option value="">~ Jump to Section ~</option>
+                        {categories.map((c) => (
+                            <option key={c} value={slugify(c)}>
+                                {c}
+                            </option>
+                        ))}
+                    </select>
+
+                    {/* Back to top - keep it OUT of flex flow to make it fixed */}
+                    <button className="toTopFixed" onClick={scrollToTop} title="Back to top">
+                    ⬆️ Top
                 </button>
-
-                <input
-                    className="input"
-                    placeholder="Search phrases..."
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                />
-                <select
-                    className="select"
-                    value={jumpTo}
-                    onChange={(e) => handleJump(e.target.value)}
-                >
-                    <option value="">~ Jump to Section ~</option>
-                    {categories.map((c) => (
-                        <option key={c} value={slugify(c)}>
-                            {c}
-                        </option>
-                    ))}
-                </select>
                 </div>
+            </div>
 
                 <h1 className="h1">Arabic Phrasebook</h1>
                 <div className="hr" />
