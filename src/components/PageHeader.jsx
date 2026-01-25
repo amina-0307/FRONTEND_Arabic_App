@@ -12,23 +12,6 @@ export default function PageHeader({ theme, toggleTheme, showExtras }) {
                     <NavLink className="navlink" to="/quiz">Quiz</NavLink>
                 </nav>
 
-                {/* CENTRE: Home + theme (NOT on homepage) */}
-                <div className="headerCenter">
-                    {showExtras ? (
-                        <>
-                            <Link to="/" className="headerPill">⬅️ Home</Link>
-                            <button
-                                className="headerIconBtn" 
-                                onClick={toggleTheme}
-                                title="Toggle theme"
-                                type="button"
-                            >
-                                {theme === "dark" ? "☀️" : "🌙"}
-                            </button>
-                        </>
-                    ) : null}
-                </div>
-
                 {/* RIGHT: empty spacer (Top button is separate/fixed) */}
                 <div className="headerRight" />
             </div>
