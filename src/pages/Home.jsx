@@ -197,12 +197,6 @@ function Home({ theme, toggleTheme }) {
     return (
         <div className="page">
             <div className="top-controls">
-
-                <div className="topbar">
-                    <button className="iconBtn theme-toggle" onClick={toggleTheme} title="Toggle theme">
-                        {theme === "dark" ? "☀️" : "🌙"}
-                    </button>
-
                     <input
                         className="input search-input"
                         placeholder="Search phrases..."
@@ -221,7 +215,6 @@ function Home({ theme, toggleTheme }) {
                             </option>
                         ))}
                     </select>
-                </div>
             </div>
 
                 <h1 className="h1">Arabic Phrasebook</h1>

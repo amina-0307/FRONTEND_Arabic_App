@@ -153,9 +153,6 @@ const emoji =
 
     return (
         <div className="page">
-            <button className="toTopFixed" onClick={scrollToTop} title="Back to top" type="button">
-                ⬆️ Top
-            </button>
 
             <h1 className="h1">🗒️ Flashcards</h1>
             <div className="hr" />

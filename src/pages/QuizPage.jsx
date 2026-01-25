@@ -258,9 +258,6 @@ export default function QuizPage() {
     // RENDER //
     return (
         <div className="page">
-            <button className="toTopFixed" onClick={scrollToTop} title="Back to top">
-                ⬆️ Top
-            </button>
 
             <h1 className="h1">📝 Quiz</h1>
             <div className="hr" />
