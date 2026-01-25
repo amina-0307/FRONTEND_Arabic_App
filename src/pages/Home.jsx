@@ -221,11 +221,6 @@ function Home({ theme, toggleTheme }) {
                             </option>
                         ))}
                     </select>
-
-                    {/* Back to top - keep it OUT of flex flow to make it fixed */}
-                    <button className="toTopFixed" onClick={scrollToTop} title="Back to top">
-                    ⬆️ Top
-                </button>
                 </div>
             </div>
 

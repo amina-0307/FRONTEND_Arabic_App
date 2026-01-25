@@ -15,7 +15,7 @@
   --border: rgba(0,0,0,0.18);
   --surface: rgba(255,255,255,0.92);
 
-  /* make stripes actually visible in light mode */
+  /* stripes actually visible in light mode */
   --stripeA: rgba(0,0,0,0.06);
   --stripeB: rgba(0,0,0,0.025);
 
@@ -67,17 +67,16 @@ a {
 
 /* Layout */
 .page {
-  max-width: 980px;
-  width: 100%;
+  width: min(980px, 100%);
   margin: 0 auto;
   padding: 18px 18px 60px;
 }
 
-/* Header (Layout.jsx) Sticky + wraps on mobile */
+/* Global header (Layout.jsx) */
 .header-bar {
   position: sticky;
   top: 0;
-  z-index: 1000;
+  z-index: 2000;
   background: var(--bg);
   padding: 10px 12px;
   border-bottom: 1px solid var(--border);
@@ -85,81 +84,33 @@ a {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 10px;
-  flex-wrap: wrap; /* mobile fix */
+  gap: 12px;
+
+  /* key for mobile: allow wrapping instead of hiding */
+  flex-wrap: wrap;
 }
 
+/* left side nav links */
 .header-nav {
   display: flex;
-  gap: 14px;
+  gap: 18px;
   flex-wrap: wrap; /* mobile fix */
   align-items: center;
 }
 
-.header-nav a {
-  text-decoration: none;
-  font-weight: 600;
-}
-
+/* right side actions (theme toggle) */
 .header-sections {
   display: flex;
-  gap: 8px;
+  gap: 10px;
   align-items: center;
   flex-wrap: wrap;
 }
 
-/* Top Bar (home page search + jump) */
-.top-controls {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
-  padding: 10px 12px;
-}
-.topbar{
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-  align-items: center;
-  flex-wrap: wrap;
-  width: 100%;
-  margin-top: 18px;
-}
-
-/* use actual classes - .input + .select */
-.topbar .input {
-  flex: 1 1 220px;
-  min-width: 180px;
-  max-width: 520px;
-}
-
-.topbar .select {
-  flex: 0 0 auto;
-  min-width: 230px; /* enough for "~ jump to section ~" */
-  max-width:  320px;
-}
-
-/* fixed back-to-top button */
-.toTopFixed {
-  position: fixed;
-  right: calc(12px + env(safe-area-inset-right));
-  top: calc(70px + env(safe-area-inset-top));
-  z-index: 9999;
-  border: 1px solid var(--control-border);
-  font-size: 12px;
-  padding: 6px 10px;
-  border-radius: 10px;
-  cursor: pointer;
-  background: var(--control-bg);
-  color: var(--text);
-}
-
-/* controls (buttons/inputs/select) */
+/* common controls (buttons/inputs/select) */
 .iconBtn {
   width: 42px;
   height: 42px;
-  border-radius: 50%;
+  border-radius: 999px;
   border: 1px solid var(--control-border);
   background: var(--control-bg);
   color: var(--text);
@@ -168,9 +119,9 @@ a {
   place-items: center;
 }
 
+/* text inputs + selects */
 .input {
-  flex: 1;
-  max-width: 600px;
+  width: 100%;
   padding: 10px 12px;
   border-radius: 10px;
   border: 1px solid var(--control-border);
@@ -179,8 +130,7 @@ a {
 }
 
 .select {
-  flex: 1;
-  max-width: 650px;
+  width: 100%;
   padding: 10px 12px;
   border-radius: 10px;
   border: 1px solid var(--control-border);
@@ -211,6 +161,34 @@ a {
 }
 
 .center { text-align: center; }
+
+/* home top controls (search + jump) - home.jsx: the row under the header */
+.top-controls {
+  display: flex;
+  justify-content: center;
+  margin-top: 18px;
+}
+
+.topbar {
+  width: min(980px, 100%);
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap; /* important for mobile */
+}
+
+/* on desktop: make search longer than jump */
+.topbar .input {
+  flex: 1 1 520px;
+  max-width: 600px;
+}
+
+.topbar .select {
+  flex: 0 1 280px;
+  max-width: 320px;
+  min-width: 210px; /* enough for "~ jump to section ~" */
+}
 
 /* headings */
 .h1 {
@@ -247,12 +225,12 @@ a {
   vertical-align: middle;
 }
 
-/* cards + text */
+/* cards + text/typography */
 .card {
   border: 1px solid var(--card-border);
   background: var(--card-bg);
   box-shadow: 0 10px 30px rgba(0,0,0,0.06);
-  padding: 18px 18px;
+  padding: 18px;
   margin: 14px auto;
   max-width: 860px;
 }
@@ -283,12 +261,13 @@ html[data-theme="dark"] .card {
 }
 
 /* categories page */
-.categoryList {
+.categoriesWrap {
+  max-width: 620px;
+  margin: 12px auto 0;
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  max-width: 680px;
-  margin: 0 auto;
+  gap: 14px;
+  padding: 8px 0 20px;
 }
 
 .categoryItem {
@@ -297,35 +276,28 @@ html[data-theme="dark"] .card {
   justify-content: center;
   gap: 12px;
 
-  padding: 18px 22px;
-  border-radius: 14px;
+  text-decoration: none;
+  font-family :Georgia, "Times New Roman", Times, serif;
+  font-size: 26px;
+  padding: 16px 18px;
+
   border: 1px solid var(--card-border);
   background: var(--card-bg);
-
-  text-decoration: none;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.10);
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.06);
 }
 
 html[data-theme="dark"] .categoryItem {
   box-shadow: 0 10px 30px rgba(0,0,0,0.35);
 }
 
-.categoryItem:hover {
-  transform: translateY(-1px);
-}
+.categoryItem:hover { transform: translateY(-1px); }
 
-.categoryEmoji { font-size: 22px; }
+.categoryIcon { font-size: 28px; line-height: 1; }
+.categoryText { font-weight: 600; }
 
-.categoryName {
-  font-family: Georgia, "Times New Roman", Times, serif;
-  font-size: 18px;
-  font-weight: 600;
-}
-
-/* flashcards */
-.flashControls {
-  margin-top: 6px;
-}
+/* flashcards ui */
+.flashControls { margin-top: 6px; }
 
 .flashRow {
   display: flex;
@@ -384,7 +356,7 @@ html[data-theme="dark"] .categoryItem {
 .flashTransliteration {
   font-family: Georgia, "Times New Roman", Times, serif;
   font-size: 22px;
-  margin: 10px 0 10px;
+  margin: 10px 0;
 }
 
 .flashCategoryLine {
@@ -408,7 +380,9 @@ html[data-theme="dark"] .categoryItem {
   align-items: center;
 }
 
-/* quiz */
+.translatorRow .input { flex: 1; }
+
+/* quiz ui */
 .quizMeta {
   display: flex;
   justify-content: space-between;
@@ -442,9 +416,7 @@ html[data-theme="dark"] .categoryItem {
   font-size: 16px;
 }
 
-.quizQuestion {
-  max-width: 860px;
-}
+.quizQuestion { max-width: 860px; }
 
 .quizOptions {
   display: grid;
@@ -505,11 +477,13 @@ html[data-theme="dark"] .categoryItem {
 /* mobile tweaks */
 @media (max-width: 480px) {
   .page {
-    padding: 14px 14px 60px;
+    padding-left: 14px;
+    padding-right: 14px;
   }
 
   .header-bar {
     justify-content: center;
+    text-align: center;
   }
 
   .header-nav {
@@ -522,37 +496,21 @@ html[data-theme="dark"] .categoryItem {
     width: 100%;
   }
 
-  .toTopFixed {
-    top: calc(64px + env(safe-area-inset-top));
-    right: calc(10px + env(safe-area-inset-right));
+  /* make search + jump stack + match widths */
+  .topbar {
+    flex-direction: column;
+    align-items: stretch;
   }
 
-  /* make arabic not explode off-screen */
-  .arabic {
-    font-size: 38px;
-  }
-
-  .metaLine {
-    font-size: 20px;
-  }
-
-  .flashSelect {
-    min-width: 240px;
+  .topbar .input,
+  .topbar .select {
+    max-width: none;
+    min-width: 0;
     width: 100%;
   }
 }
 
+/* tiny phone */
 @media (max-width: 360px) {
-  .header-nav{
-    gap: 12px;
-  }
-
-  toTopFixed {
-    top: calc(58px + env(safe-area-inset-to));
-    right: calc(8px + env(safe-area-inset-right));
-  }
-
-  .topbar .select {
-    min-width: 210px;
-  }
+  .header-nav { gap: 12px; }
 }
