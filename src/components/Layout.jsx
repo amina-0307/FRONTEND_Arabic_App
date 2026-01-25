@@ -20,11 +20,6 @@ export default function Layout({ theme, toggleTheme }) {
                 </nav>
 
                 <div className="header-sections">
-                    {!isHome && (
-                        <Link className="iconBtn" to="/" title="Back to home">
-                            ⬅️ Home
-                        </Link>
-                    )}
 
                     <button
                         className="iconBtn"
