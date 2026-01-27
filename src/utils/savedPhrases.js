@@ -1,31 +1,30 @@
 const LS_KEY = "savedPhrases"; // keep consistent with all Listeners //
 
-export function loadSavedPhrases() {
-    try {
-        return JSON.parse(localStorage.getItem(LS_KEY) || "[]");
-    } catch {
-        return [];
-    }
+export function exportSavedPhrases() {
+    return loadSavedPhrases();
 }
 
-    export function savePhrase(newPhrase) {
-        const list = loadSavedPhrases();
+export function mergePhrases(incoming) {
+    const current = loadSavedPhrases();
+    const map = new Map();
 
-        const exists = list.some(
-            (p) =>
-                (p.arabic || "").trim() === (newPhrase.arabic || "").trim() &&
-                (p.english || "").trim().toLowerCase() ===
-                    (newPhrase.english || "").trim().toLowerCase() &&
-                (p.category || "Saved") === (newPhrase.category || "Saved")
-        );
+    const keyOf = (p) =>
+        `${(p.arabic || "").trim()}||${(p.english || "").trim().toLowerCase()}||${(p.category || "Saved").trim()}`;
 
-        if (exists) return list;
+    // current first //
+    for (const p of current) map.set(keyOf(p), p);
 
-        const updated = [newPhrase, ...list];
-        localStorage.setItem(LS_KEY, JSON.stringify(updated));
+    // then incoming overwrites/adds //
+    for (const p of incoming || []) map.set(keyOf(p), p);
 
-        // same tab update //
-        window.dispatchEvent(new Event("savedPhrasesUpdated"));
+    const merged = Array.from(map.values()).sort((a, b) =>
+        (b.createdAt || "").localeCompare(a.createdAt || ""))
+    );
 
-        return updated;
+    localStorage.setItem(LS_KEY, JSON.stringify(merged));
+
+    // notify same-tab listeners //
+    window.dispatchEvent(new Event("savedPhrasesUpdated"));
+
+    return merged;
 }

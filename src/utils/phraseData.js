@@ -6,7 +6,7 @@ export function getCombinedPhrases() {
 
     // group saved by category //
     const byCategory = saved.reduce((acc, p) => {
-        const cat = p.category || "Saved";
+        const cat = (p.category || "Saved").trim() || "Saved";
         acc[cat] ||= [];
         acc[cat].push({
             arabic: p.arabic,
@@ -18,6 +18,11 @@ export function getCombinedPhrases() {
 
     const baseMap = new Map(basePhrases.map((c) => [c.category, { ...c }]));
 
+    // seed categories that should always exist //
+    if (!baseMap.has("Saved")) baseMap.set("Saved", { category: "Saved", phrases: [] });
+    if (!baseMap.has("Other")) baseMap.set("Other", { category: "Other", phrases: [] });
+
+    // merge saved into base //
     for (const [cat, items] of Object.entries(byCategory)) {
         if (baseMap.has(cat)) {
             baseMap.get(cat).phrases = [ ...items, ...baseMap.get(cat).phrases];

@@ -7,9 +7,11 @@ import { suggestCategory } from "../utils/categorySuggest";
 import { savePhrase } from "../utils/savedPhrases";
 
 import { translateText, translateImage } from "../api";
-
 import { resizeImage } from "../utils/imageResize";
 import { canUseImage, incrementUsage, getUsage, IMAGE_LIMIT } from "../utils/imageCap";
+
+import { syncPull, syncPush } from "../utils/sync";
+import { getSyncKey, setSyncKey, clearSyncKey, generateSyncKey } from "../utils/syncCode";
 
 function slugify(str) {
     return str
@@ -34,13 +36,12 @@ function Home({ theme, toggleTheme }) {
         Airport: "✈️🛂",
         "Luggage & Baggage": "🧳",
         Emergency: "🏥🚑",
+        Other: "🗃️",
     };
 
-    function getCategoryEmoji(name) {
-        return emojiMap[name] || "📌";
-    }
+    const getCategoryEmoji = (name) => emojiMap[name] || "📌";
 
-    // Keep combined phrases in state (so UI updates instantly) //
+    // phrases //
     const [phrases, setPhrases] = useState(() => getCombinedPhrases());
 
     // Helper to reload from storage + base json //
@@ -50,18 +51,23 @@ function Home({ theme, toggleTheme }) {
 
     // If user switches tabs/windows, refresh too) //
     useEffect(() => {
-        const onStorage = (e) => {
-            if (e.key === "savedPhrases") refreshPhrases();
+        const onUpdate = () => refreshPhrases();
+        window.addEventListener("savedPhrasesUpdated", onUpdate);
+        window.addEventListener("storage", onUpdate);
+        return () => {
+            window.removeEventListener("savedPhrasesUpdated", onUpdate);
+            window.removeEventListener("storage", onUpdate);
         };
-        window.addEventListener("storage", onStorage);
-        return () => window.removeEventListener("storage", onStorage);
     }, []);
 
     // Search + jump //
     const [query, setQuery] = useState("");
     const [jumpTo, setJumpTo] = useState("");
 
-    const categories = useMemo(() => phrases.map((c) => c.category), [phrases]);
+    const categories = useMemo(
+        () => phrases.map((c) => c.category),
+        [phrases]
+    );
 
     const filtered = useMemo(() => {
         const q = query.trim().toLowerCase();
@@ -82,8 +88,9 @@ function Home({ theme, toggleTheme }) {
     const handleJump = (slug) => {
         setJumpTo(slug);
         if (!slug) return;
-        const el = document.getElementById(`section-${slug}`);
-        el?.scrollIntoView({ behavior: "smooth", block: "start" });
+        document
+            .getElementById(`section-${slug}`)
+            ?.scrollIntoView({ behavior: "smooth", block: "start" });
     };
 
     const scrollToTop = () => {
@@ -97,24 +104,22 @@ function Home({ theme, toggleTheme }) {
     const [result, setResult] = useState(null);
     const [err, setErr] = useState("");
 
-    // Save prompt state //
-    const [saveCat, setSaveCat] = useState("Saved");
+    // Save //
+    const [saveCat, setSaveCat] = useState("Other");
     const [showSavePrompt, setShowSavePrompt] = useState(false);
     const [savedToast, setSavedToast] = useState("");
 
     const categoriesForSave = useMemo(() => {
         const names = phrases.map((c) => c.category);
-        return Array.from(new Set(["Saved", ...names]));
+        return Array.from(new Set(["Saved", "Other", ...names]));
     }, [phrases]);
 
-    function showToast(msg) {
+    const showToast = (msg) => {
         setSavedToast(msg);
         setTimeout(() => setSavedToast(""), 2500);
-    }
+    };
 
-    function copy(text) {
-        navigator.clipboard.writeText(text || "");
-    }
+    const copy = (text) => navigator.clipboard.writeText(text || "");
 
     async function handleTranslate() {
         setErr("");
@@ -129,8 +134,7 @@ function Home({ theme, toggleTheme }) {
 
         if (cached) {
             setResult(cached);
-            const suggested = suggestCategory(cached);
-            setSaveCat(suggested || "Saved");
+            setSaveCat(suggestCategory(cached) || "Other");
             setShowSavePrompt(true);
             return;
         }
@@ -140,9 +144,7 @@ function Home({ theme, toggleTheme }) {
             const data = await translateText({ text, direction });
             setResult(data);
             cacheSet(cacheKey, data);
-
-            const suggested = suggestCategory(data);
-            setSaveCat(suggested || "Saved");
+            setSaveCat(suggestCategory(data) || "Other");
             setShowSavePrompt(true);
         } catch (e) {
             setErr(e?.message || "Something went wrong");
@@ -155,13 +157,9 @@ function Home({ theme, toggleTheme }) {
         const file = e.target.files?.[0];
         if (!file) return;
 
-        setErr("");
-        setResult(null);
-        setShowSavePrompt(false);
-
         if (!canUseImage()) {
             const u = getUsage();
-            setErr(`Image limit reached: ${u.used}/${IMAGE_LIMIT} this month.`);
+            setErr(`Image limit reached: ${u.used}/${IMAGE_LIMIT}`);
             e.target.value = "";
             return;
         }
@@ -175,248 +173,169 @@ function Home({ theme, toggleTheme }) {
             incrementUsage();
             setResult(data);
 
-            const suggested = suggestCategory(data);
-            setSaveCat(suggested || "Saved");
+            setSaveCat(suggestCategory(data) || "Other");
             setShowSavePrompt(true);
-        } catch (e2) {
-            setErr(e2?.message || "Image translation failed");
+        } catch {
+            setErr("Image translation failed");
         } finally {
             setLoading(false);
             e.target.value = "";
         }
     }
 
-    function handleClear() {
-        setInputText("");
-        setResult(null);
-        setErr("");
-        setShowSavePrompt(false);
-        setSaveCat("Saved");
+    // Sync //
+    const [syncKeyState, setSyncKeyState] = useState(() => getSyncKey());
+    const [syncBusy, setSyncBusy] = useState(false);
+    const [syncMsg, setSyncMsg] = useState("");
+
+    const syncToast = (msg) => {
+        setSyncMsg(msg);
+        setTimeout(() => setSyncMsg(""), 3500);
+    };
+
+    async function handleSyncPull() {
+        try {
+            setSyncBusy(true);
+            if (!syncKeyState) return syncToast("Enter a sync code first");
+            await syncPull(syncKeyState);
+            refreshPhrases();
+            syncToast("Pulled from cloud ✅");
+        } catch {
+            syncToast("Sync pull failed");
+        } finally {
+            setSyncBusy(false);
+        }
     }
 
+    async function handleSyncPush() {
+        try {
+            setSyncBusy(true);
+            if (!syncKeyState) return syncToast("Enter a sync code first");
+            const out = await syncPush(syncKeyState);
+            syncToast(`Pushed (${out.count}) ✅`);
+        } catch {
+            syncToast("Sync push failed");
+        } finally {
+            setSyncBusy(false);
+        }
+    }
+
+    const handleCreateSync = () => {
+        const key = generateSyncKey();
+        setSyncKey(key);
+        setSyncKeyState(key);
+        syncToast("New sync code created ✨");
+    };
+
+    const handleSaveSync = () => {
+        setSyncKey(syncKeyState);
+        syncToast("Sync code saved 💾");
+    };
+
+    const handleClearSync = () => {
+        clearSyncKey();
+        setSyncKeyState("");
+        syncToast("Sync removed 🚮");
+    };
+
+    // UI //
     return (
         <div className="page">
             <div className="top-controls">
-                    <input
-                        className="input search-input"
-                        placeholder="Search phrases..."
-                        value={query}
-                        onChange={(e) => setQuery(e.target.value)}
-                    />
-                    <select
-                        className="select jump-select"
-                        value={jumpTo}
-                        onChange={(e) => handleJump(e.target.value)}
-                    >
-                        <option value="">~ Jump to Section ~</option>
-                        {categories.map((c) => (
-                            <option key={c} value={slugify(c)}>
-                                {c}
-                            </option>
-                        ))}
-                    </select>
+                <input
+                    className="input search-input"
+                    placeholder="Search phrases..."
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                />
+                <select
+                    className="select jump-select"
+                    value={jumpTo}
+                    onChange={(e) => handleJump(e.target.value)}
+                >
+                    <option value="">~ Jump to Section ~</option>
+                    {categories.map((c) => (
+                        <option key={c} value={slugify(c)}>
+                        {c}
+                        </option>
+                    ))}
+                </select>
             </div>
 
-                <h1 className="h1">Arabic Phrasebook</h1>
-                <div className="hr" />
+            <h1 className="h1">Arabic Phrasebook</h1>
+            <div className="hr" />
 
-                <h2 className="h2">🧠 AI Translator</h2>
+            <h2 className="h2">🧠 AI Translator</h2>
 
-                <div className="card" style={{ marginBottom: 18 }}>
-                    <div className="flashRow" style={{ justifyContent: "flex-start" }}>
-                        <button
-                            className={`btn ${direction === "en_to_ar" ? "btnActive" : ""}`}
-                            onClick={() => setDirection("en_to_ar")}
-                            type="button"
-                        >
-                            English → Arabic
-                        </button>
-                        <button
-                            className={`btn ${direction === "ar_to_en" ? "btnActive" : ""}`}
-                            onClick={() => setDirection("ar_to_en")}
-                            type="button"
-                        >
-                            Arabic → English
-                        </button>
-                    </div>
-
-                    <div className="translatorRow" style={{ marginTop: 12}}>
-                        <input
-                            className="input"
-                            style={{ width: "100%" }}
-                            placeholder={direction === "en_to_ar" ? "Type English..." : "اكتب بالعربي..."}
-                            value={inputText}
-                            onChange={(e) => setInputText(e.target.value)}
-                            onKeyDown={(e) => e.key === "Enter" && handleTranslate()}
-                        />
-
-                        <label className="iconBtn" title="Upload image" style={{ display: "grid", placeItems: "center" }}>
-                            📸
-                            <input
-                                type="file"
-                                accept="image/*"
-                                style={{ display: "none" }}
-                                onChange={handleImagePick}
-                            />
-                        </label>
-                    </div>
-
-                    <div className="flashRow" style={{ justifyContent: "flex-start", marginTop: 12 }}>
-                        <button className="btn" onClick={handleTranslate} disabled={loading} type="button">
-                            {loading ? "Translating..." : "Translate"}
-                        </button>
-
-                        <button
-                            className="btn"
-                            onClick={handleClear}
-                            type="button"
-                        >
-                            Clear
-                        </button>
-                    </div>
-
-                    {err && (
-                        <div className="metaLine" style={{ marginTop: 12 }}>
-                            ❌ {err}
-                        </div>
-                    )}
-
-                    {savedToast && (
-                        <div className="metaLine" style={{ marginTop: 10 }}>
-                            ✅ {savedToast}
-                        </div>
-                    )}
-
-                    {result && (
-                        <div style={{ marginTop: 14 }}>
-                            <div className="hr" />
-
-                            <div className="arabic" style={{ textAlign: "center" }}>
-                                {result.arabic}
-                            </div>
-
-                            <div className="metaLine">
-                                <span className="metaLabel">Transliteration:</span> {result.transliteration}
-                            </div>
-                            <div className="metaLine">
-                                <span className="metaLabel">English:</span> {result.english}
-                            </div>
-
-                            <div className="flashRow" style={{ justifyContent: "flex-start", marginTop: 12 }}>
-                                <button className="btn" onClick={() => copy(result.arabic)} type="button">
-                                    Copy Arabic
-                                </button>
-                                <button className="btn" onClick={() => copy(result.transliteration)} type="button">
-                                    Copy Transliteration
-                                </button>
-                                <button className="btn" onClick={() => copy(result.english)} type="button">
-                                    Copy English
-                                </button>
-                            </div>
-
-                            {showSavePrompt && (
-                                <div style={{ marginTop: 14 }}>
-                                    <div className="hr" />
-
-                                    <div className="metaLine">
-                                        <span className="metaLabel">Save to category:</span>
-                                    </div>
-
-                                    <select
-                                        className="select"
-                                        value={saveCat}
-                                        onChange={(e) => setSaveCat(e.target.value)}
-                                        style={{ width: "100%", marginTop: 8 }}
-                                    >
-                                        {categoriesForSave.map((c) => (
-                                            <option key={c} value={c}>
-                                                {c}
-                                            </option>
-                                        ))}
-                                    </select>
-
-                                    <div className="flashRow" style={{ justifyContent: "flex-start", marginTop: 12 }}>
-                                        <button
-                                            className="btn"
-                                            type="button"
-                                            onClick={() => {
-                                                savePhrase({
-                                                    ...result,
-                                                    category:saveCat,
-                                                    createdAt: new Date().toISOString(),
-                                                    source: "translator",
-                                                });
-                                                refreshPhrases(); // instant UI update //
-
-                                                setShowSavePrompt(false);
-                                                showToast(`Saved to: ${saveCat}`);
-                                            }}
-                                        >
-                                            💾 Save
-                                        </button>
-
-                                        <button
-                                            className="btn"
-                                            type="button"
-                                            onClick={() => setShowSavePrompt(false)}
-                                        >
-                                            🙅🏽 Don't save
-                                        </button>
-                                    </div>
-                                </div>
-                            )}
-                    </div>
-                    )}
+            {/* translator card */}
+            {/* Sync */}
+            <h2 className="h2">Sync (optional) ☁️</h2>
+            <div className="card">
+                <div className="metaLine">
+                    Keep saved phrases across devices using a sync code.
                 </div>
 
-                <div className="center" style={{margin: "10px 0 22px"}}>
-                    <Link to="/flashcards" style={{ fontFamily: "Georgia, serif", fontSize: 26 }}>
-                        🗒️ Flashcards 🗒️
-                    </Link>
+                <input
+                    className="input"
+                    style={{ width: "100%", marginTop: 10 }}
+                    placeHolder="Enter sync code"
+                    value={syncKeyState}
+                    onChange={(e) => setSyncKeyState(e.target.value)}
+                />
+
+                <div className="flashRow" style={{ justifyContent: "flex-start" }}>
+                    <button
+                        className="btn"
+                        onClick={handleCreateSync}
+                        disabled={syncBusy}
+                    >
+                        ✨ Create
+                    </button>
+                    <button
+                        className="btn"
+                        onClick={handleSaveSync}
+                        disabled={syncBusy}>
+                    >
+                        💾 Save
+                    </button>
+                    <button
+                        className="btn"
+                        onClick={handleClearSync}
+                        disabled={syncBusy}
+                    >
+                        🚮 Remove
+                    </button>
                 </div>
 
-                {/* Sections */}
-                {filtered.map((cat) => {
-                    const slug = slugify(cat.category);
+                <div className="flashRow" style={{ justifyContent: "flex-start" }}>
+                    <button
+                        className="btn"
+                        onClick={handleSyncPull}
+                        disabled={syncBusy}
+                    >
+                        ⬇️ Pull
+                    </button>
+                    <button
+                        className="btn"
+                        onClick={handleSyncPush}
+                        disabled={syncBusy}
+                    >
+                        ⬆️ Push
+                    </button>
+                </div>
 
-                    return (
-                    <div key={cat.category} id={`section-${slug}`}>
-                        <h3 className="sectionTitle">
-                            <span className="sectionEmoji">{getCategoryEmoji(cat.category)}</span>
-                            {cat.category}
-                        </h3>
+                {syncMsg && <div className="metaLine">{syncMsg}</div>}
+            </div>
 
-                        {cat.phrases.map((p, idx) => (
-                            <div className="card" key={idx}>
-                                <div className="arabic">{p.arabic}</div>
-
-                                <div className="metaLine">
-                                    <span className="metaLabel">Meaning:</span>{" "}
-                                    {p.english}
-                                </div>
-
-                                <div className="metaLine">
-                                    <span className="metaLabel">Transliteration:</span>{" "}
-                                    {p.transliteration}
-                                </div>
-
-                                <div className="metaLine metaMuted">
-                                    Category: {cat.category}
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                );
-            })}
-
-            {/* bottom centre back to the top */}
+            {/* bottom */}
             <div className="center" style={{ margin: "30px 0 50px" }}>
                 <button className="btn" onClick={scrollToTop}>
                     ⬆️ Back to the top
                 </button>
-            </div>
+            </div>      
         </div>
     );
 }
 
 export default Home;
+                   
