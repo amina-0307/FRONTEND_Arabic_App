@@ -294,7 +294,7 @@ function Home({ theme, toggleTheme }) {
                     <button
                         className="btn"
                         onClick={handleSaveSync}
-                        disabled={syncBusy}>
+                        disabled={syncBusy}
                     >
                         💾 Save
                     </button>
