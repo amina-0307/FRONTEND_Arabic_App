@@ -1,22 +1,47 @@
-import basePhrases from "../data/phrases.json";
+import basePhrasesRaw from "../data/phrases.json";
 import { loadSavedPhrases } from "./savedPhrases";
 
+function normalizeBase(baseRaw) {
+    const baseArray = Array.isArray(baseRaw)
+    ? baseRaw
+    : Array.isArray(baseRaw?.categories)
+    ? baseRaw.categories
+    : [];
+
+    // ensure each category has expected shape //
+    return baseArray
+        .filter(Boolean)
+        .map((c) => ({
+            category: (c.category || "").trim(),
+            phrases: Array.isArray(c.phrases) ? c.phrases : [],
+        }))
+        .filter((c) => c.category);
+}
+
 export function getCombinedPhrases() {
-    const saved = loadSavedPhrases();
+    const basePhrases = normalizeBase(basePhrasesRaw);
+
+    const savedRaw = loadSavedPhrases();
+    const saved = Array.isArray(savedRaw) ? savedRaw : [];
 
     // group saved by category //
     const byCategory = saved.reduce((acc, p) => {
         const cat = (p.category || "Saved").trim() || "Saved";
-        acc[cat] ||= [];
+        if (!acc[cat]) acc[cat] = [];
         acc[cat].push({
-            arabic: p.arabic,
-            english: p.english,
-            transliteration: p.transliteration,
+            arabic: (p.arabic || "").trim(),
+            english: (p.english || "").trim(),
+            transliteration: (p.transliteration || "").trim(),
+            createdAt: p.createdAt,
+            source: p.source,
         });
         return acc;
     }, {});
 
-    const baseMap = new Map(basePhrases.map((c) => [c.category, { ...c }]));
+    // map base categories for easy merge //
+    const baseMap = new Map(
+        basePhrases.map((c) => [c.category, { category: c.category, phrases: [...c.phrases] }])
+    );
 
     // seed categories that should always exist //
     if (!baseMap.has("Saved")) baseMap.set("Saved", { category: "Saved", phrases: [] });
@@ -25,11 +50,12 @@ export function getCombinedPhrases() {
     // merge saved into base //
     for (const [cat, items] of Object.entries(byCategory)) {
         if (baseMap.has(cat)) {
-            baseMap.get(cat).phrases = [ ...items, ...baseMap.get(cat).phrases];
+            const existing = baseMap.get(cat);
+            existing.phrases = [...items, ...arguments(existing.phrases || [])];
         } else {
             baseMap.set(cat, { category: cat, phrases: items });
         }
     }
 
-        return Array.from(baseMap.values());
+    return Array.from(baseMap.values());
 }

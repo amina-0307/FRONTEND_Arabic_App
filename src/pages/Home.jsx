@@ -44,6 +44,11 @@ function Home({ theme, toggleTheme }) {
     // phrases //
     const [phrases, setPhrases] = useState(() => getCombinedPhrases());
 
+    // DEBUG: check what phrases are actually loading //
+    useEffect(() => {
+        console.log("getCombinedPhrases()", getCombinedPhrases());
+    }, []);
+
     // Helper to reload from storage + base json //
     const refreshPhrases = () => {
         setPhrases(getCombinedPhrases());
@@ -431,6 +436,34 @@ function Home({ theme, toggleTheme }) {
 
                 {syncMsg && <div className="metaLine">{syncMsg}</div>}
             </div>
+
+            {/* phrasecards */}
+            {filtered.map((cat) => {
+                const slug = slugify(cat.category);
+
+                return (
+                    <div key={cat.category} id={`section-${slug}`}>
+                        <h3 className="sectionTitle">
+                            <span className="sectionEmoji">{getCategoryEmoji(cat.category)}</span>
+                            {cat.category}
+                        </h3>
+
+                        {cat.phrases.map((p, idx) => (
+                            <div className="card" key={idx}>
+                                <div className="arabic">{p.arabic}</div>
+
+                                <div className="metaLine">
+                                    <span className="metaLabel">Meaning:</span> {p.english}
+                                </div>
+
+                                <div className="metaLine">
+                                    <span className="metaLabel">Transliteration:</span> {p.transliteration}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                );
+            })}
 
             <div className="center" style={{ margin: "30px 0 50px" }}>
                 <button className="btn" onClick={scrollToTop}>
