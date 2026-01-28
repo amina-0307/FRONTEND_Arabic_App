@@ -379,7 +379,7 @@ function Home({ theme, toggleTheme }) {
                                             });
                                             refreshPhrases();
                                             setShowSavePrompt(false);
-                                            showToast(`Saved to: ${savedCat}`);
+                                            showToast(`Saved to: ${saveCat}`);
                                         }}
                                     >
                                         💾 Save
@@ -409,7 +409,7 @@ function Home({ theme, toggleTheme }) {
                 />
 
                 <div className="flashRow">
-                    <button classname="btn" onClick={handleCreateSync}>
+                    <button className="btn" onClick={handleCreateSync}>
                         ✨ Create
                     </button>
                     <button className="btn" onClick={handleSaveSync}>
