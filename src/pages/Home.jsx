@@ -183,6 +183,14 @@ function Home({ theme, toggleTheme }) {
         }
     }
 
+    function handleClear() {
+        setInputText("");
+        setResult(null);
+        setErr("");
+        setShowSavePrompt(false);
+        setSaveCat("Other");
+    }
+
     // Sync //
     const [syncKeyState, setSyncKeyState] = useState(() => getSyncKey());
     const [syncBusy, setSyncBusy] = useState(false);
@@ -241,6 +249,7 @@ function Home({ theme, toggleTheme }) {
     // UI //
     return (
         <div className="page">
+            {/* search + jump */}
             <div className="top-controls">
                 <input
                     className="input search-input"
@@ -268,58 +277,154 @@ function Home({ theme, toggleTheme }) {
             <h2 className="h2">🧠 AI Translator</h2>
 
             {/* translator card */}
-            {/* Sync */}
-            <h2 className="h2">Sync (optional) ☁️</h2>
             <div className="card">
-                <div className="metaLine">
-                    Keep saved phrases across devices using a sync code.
+                <div className="flashRow" style={{ justifyContent: "flex-start" }}>
+                    <button 
+                        className={`btn ${direction === "en_to_ar" ? "btnActive" : ""}`}
+                        onClick={() => setDirection("en_to_ar")}
+                    >
+                        English → Arabic
+                    </button>
+                    <button
+                        className={`btn ${direction === "ar_to_en" ? "btnActive" : ""}`}
+                        onClick={() => setDirection("ar_to_en")}
+                    >
+                        Arabic → English
+                    </button>
                 </div>
 
+                <div className="translatorRow" style={{ marginTop: 12 }}>
+                    <input
+                        className="input"
+                        placeholder={
+                            direction === "en_to_ar" ? "Type English..." : "اكتب بالعربي..."
+                        }
+                        value={inputText}
+                        onChange={(e) => setInputText(e.target.value)}
+                        onKeyDown={(e) => e.key === "Enter" && handleTranslate()}
+                    />
+
+                    <label className="iconBtn" title="Upload image">
+                        📸
+                        <input
+                            type="file"
+                            accept="image/*"
+                            hidden
+                            onChange={handleImagePick}
+                        />
+                    </label>
+                </div>
+
+                <div className="flashRow" style={{ justifyContent: "flex-start" }}>
+                    <button className="btn" onClick={handleTranslate} disabled={loading}>
+                        {loading ? "Translating..." : "Translate"}
+                    </button>
+                    <button className="btn" onClick={handleClear}>
+                        Clear
+                    </button>
+                </div>
+
+                {err && <div className="metaLine">❌ {err}</div>}
+                {savedToast && <div className="metaLine">✅ {savedToast}</div>}
+
+                {result && (
+                    <>
+                        <div className="hr" />
+                        <div className="arabic" style={{ textAlign: "center" }}>
+                            {result.arabic}
+                        </div>
+                        <div className="metaLine">
+                            <b>Transliteration:</b> {result.transliteration}
+                        </div>
+                        <div className="metaLine">
+                            <b>English:</b> {result.english}
+                        </div>
+
+                        <div className="flashRow">
+                            <button className="btn" onClick={() => copy(result.arabic)}>
+                                Copy Arabic
+                            </button>
+                            <button className="btn" onClick={() => copy(result.transliteration)}>
+                                Copy Transliteration
+                            </button>
+                            <button className="btn" onClick={() => copy(result.english)}>
+                                Copy English
+                            </button>
+                        </div>
+
+                        {showSavePrompt && (
+                            <>
+                                <div className="hr" />
+                                <select
+                                    className="select"
+                                    value={saveCat}
+                                    onChange={(e) => setSaveCat(e.target.value)}
+                                >
+                                    {categoriesForSave.map((c) => (
+                                        <option key={c} value={c}>
+                                            {c}
+                                        </option>
+                                    ))}
+                                </select>
+
+                                <div className="flashRow">
+                                    <button
+                                        className="btn"
+                                        onClick={() => {
+                                            savePhrase({
+                                                ...result,
+                                                category: saveCat,
+                                                createdAt: new Date().toISOString(),
+                                                source: "translator",
+                                            });
+                                            refreshPhrases();
+                                            setShowSavePrompt(false);
+                                            showToast(`Saved to: ${savedCat}`);
+                                        }}
+                                    >
+                                        💾 Save
+                                    </button>
+                                    <button 
+                                        className="btn"
+                                        onClick={() => setShowSavePrompt(false)}
+                                    >
+                                        🙅🏽 Don't save
+                                    </button>
+                                </div>
+                            </>
+                        )}
+                    </>
+                )}
+            </div>
+
+            {/* Sync */}
+            <h2 className="h2">☁️ Sync</h2>
+            <div className="card">
                 <input
                     className="input"
                     style={{ width: "100%", marginTop: 10 }}
-                    placeHolder="Enter sync code"
+                    placeholder="Enter sync code"
                     value={syncKeyState}
                     onChange={(e) => setSyncKeyState(e.target.value)}
                 />
 
-                <div className="flashRow" style={{ justifyContent: "flex-start" }}>
-                    <button
-                        className="btn"
-                        onClick={handleCreateSync}
-                        disabled={syncBusy}
-                    >
+                <div className="flashRow">
+                    <button classname="btn" onClick={handleCreateSync}>
                         ✨ Create
                     </button>
-                    <button
-                        className="btn"
-                        onClick={handleSaveSync}
-                        disabled={syncBusy}
-                    >
+                    <button className="btn" onClick={handleSaveSync}>
                         💾 Save
                     </button>
-                    <button
-                        className="btn"
-                        onClick={handleClearSync}
-                        disabled={syncBusy}
-                    >
+                    <button className="btn" onClick={handleClearSync}>
                         🚮 Remove
                     </button>
                 </div>
 
-                <div className="flashRow" style={{ justifyContent: "flex-start" }}>
-                    <button
-                        className="btn"
-                        onClick={handleSyncPull}
-                        disabled={syncBusy}
-                    >
+                <div className="flashRow">
+                    <button className="btn" onClick={handleSyncPull}>
                         ⬇️ Pull
                     </button>
-                    <button
-                        className="btn"
-                        onClick={handleSyncPush}
-                        disabled={syncBusy}
-                    >
+                    <button className="btn" onClick={handleSyncPush}>
                         ⬆️ Push
                     </button>
                 </div>
@@ -327,12 +432,11 @@ function Home({ theme, toggleTheme }) {
                 {syncMsg && <div className="metaLine">{syncMsg}</div>}
             </div>
 
-            {/* bottom */}
             <div className="center" style={{ margin: "30px 0 50px" }}>
                 <button className="btn" onClick={scrollToTop}>
                     ⬆️ Back to the top
                 </button>
-            </div>      
+            </div>
         </div>
     );
 }

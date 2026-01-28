@@ -15,7 +15,7 @@ export function clearSyncKey() {
 }
 
 // readable + short (not "secure", but fine for "optional sync") //
-export function generalSyncKey() {
+export function generateSyncKey() {
     const part1 = Math.random().toString(36).slice(2, 6).toUpperCase();
     const part2 = Math.random().toString(36).slice(2, 6).toUpperCase();
     const part3 = Math.random().toString(36).slice(2, 6).toUpperCase();
