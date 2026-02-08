@@ -1,10 +1,10 @@
 import { useMemo, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
-import { getCombinedPhrases } from "../utils/phraseData"; // if you want live categories //
+import { getCombinedPhrases } from "../utils/phraseData"; // live categories //
 import { cacheGet, cacheSet } from "../utils/translateCache";
 import { suggestCategory } from "../utils/categorySuggest";
-import { savePhrase } from "../utils/savedPhrases";
+import { savePhrase, exportSavedPhrases } from "../utils/savedPhrases";
 
 import { translateText, translateImage } from "../api";
 import { resizeImage } from "../utils/imageResize";
@@ -47,6 +47,7 @@ function Home({ theme, toggleTheme }) {
     // DEBUG: check what phrases are actually loading //
     useEffect(() => {
         console.log("getCombinedPhrases()", getCombinedPhrases());
+        console.log("exportSavedPhrases()", exportSavedPhrases?.());
     }, []);
 
     // Helper to reload from storage + base json //
@@ -119,10 +120,13 @@ function Home({ theme, toggleTheme }) {
         return Array.from(new Set(["Saved", "Other", ...names]));
     }, [phrases]);
 
-    const showToast = (msg) => {
-        setSavedToast(msg);
-        setTimeout(() => setSavedToast(""), 2500);
-    };
+    useEffect(() => {
+        if (!savedToast) return;
+        const t = setTimeout(() => setSavedToast(""), 2500);
+        return () => clearTimeout(t);
+    }, [savedToast]);
+
+    const showToast = (msg) => setSavedToast(msg);
 
     const copy = (text) => navigator.clipboard.writeText(text || "");
 
@@ -196,22 +200,73 @@ function Home({ theme, toggleTheme }) {
         setSaveCat("Other");
     }
 
+    // Save handler - normalises fields + forces refresh //
+    function handleSave() {
+        if (!result) return;
+
+        const trimmedInput = inputText.trim();
+
+        // for en_to_ar: "english meaning" is what user typed //
+        // for ar_to_en: "english meaning" is model output //
+        const englishValue =
+            direction === "en_to_ar" ? trimmedInput : (result.english || "");
+
+        const phraseToSave = {
+            id: crypto.randomUUID(), // helpful for stable rendering/merging //
+            category: saveCat,
+            createdAt: new Date().toISOString(),
+            source: "translator",
+
+            arabic: result.arabic || "",
+            transliteration: result.transliteration || "",
+            english: englishValue,
+        };
+
+        // don't save empty junk //
+        if (!phraseToSave.arabic || !phraseToSave.english) {
+            console.warn("Not saving: missing arabic/english", {phraseToSave, result, direction, inputText });
+            showToast("Not saved (missing fields)");
+            return;
+        }
+
+        // save locally //
+        savePhrase(phraseToSave);
+
+        // force any liteners + this page to refresh //
+        window.dispatchEvent(new Event("savedPhrasesUpdated"));
+        refreshPhrases();
+
+        setShowSavePrompt(false);
+        showToast(`Saved to: ${saveCat}`);
+
+        // DEBUG //
+        console.log("Saved phrase:", phraseToSave);
+        console.log("exportSavedPhrases()", exportSavedPhrases?.());
+    }
+
     // Sync //
     const [syncKeyState, setSyncKeyState] = useState(() => getSyncKey());
     const [syncBusy, setSyncBusy] = useState(false);
     const [syncMsg, setSyncMsg] = useState("");
 
-    const syncToast = (msg) => {
-        setSyncMsg(msg);
-        setTimeout(() => setSyncMsg(""), 3500);
-    };
+    useEffect(() => {
+        if (!syncMsg) return;
+        const t = setTimeout(() => setSyncMsg(""), 3500);
+        return () => clearTimeout(t);
+    }, [syncMsg]);
+
+    const syncToast = (msg) => setSyncMsg(msg);
 
     async function handleSyncPull() {
         try {
             setSyncBusy(true);
             if (!syncKeyState) return syncToast("Enter a sync code first");
             await syncPull(syncKeyState);
+
+            // after pulling into storage //
+            window.dispatchEvent(new Event("savedPhraseUpdated"));
             refreshPhrases();
+
             syncToast("Pulled from cloud ✅");
         } catch {
             syncToast("Sync pull failed");
@@ -314,8 +369,7 @@ function Home({ theme, toggleTheme }) {
                         <input
                             type="file"
                             accept="image/*"
-                            hidden
-                            onChange={handleImagePick}
+                            hidden onChange={handleImagePick}
                         />
                     </label>
                 </div>
@@ -341,8 +395,10 @@ function Home({ theme, toggleTheme }) {
                         <div className="metaLine">
                             <b>Transliteration:</b> {result.transliteration}
                         </div>
+
+                        {/* show correct english for en_to_ar */}
                         <div className="metaLine">
-                            <b>English:</b> {result.english}
+                            <b>English:</b> {direction === "en_to_ar" ? inputText.trim() : result.english}
                         </div>
 
                         <div className="flashRow">
@@ -352,7 +408,7 @@ function Home({ theme, toggleTheme }) {
                             <button className="btn" onClick={() => copy(result.transliteration)}>
                                 Copy Transliteration
                             </button>
-                            <button className="btn" onClick={() => copy(result.english)}>
+                            <button className="btn" onClick={() => copy(direction === "en_to_ar" ? inputText.trim() : result.english)}>
                                 Copy English
                             </button>
                         </div>
@@ -375,17 +431,7 @@ function Home({ theme, toggleTheme }) {
                                 <div className="flashRow">
                                     <button
                                         className="btn"
-                                        onClick={() => {
-                                            savePhrase({
-                                                ...result,
-                                                category: saveCat,
-                                                createdAt: new Date().toISOString(),
-                                                source: "translator",
-                                            });
-                                            refreshPhrases();
-                                            setShowSavePrompt(false);
-                                            showToast(`Saved to: ${saveCat}`);
-                                        }}
+                                        onClick={handleSave}
                                     >
                                         💾 Save
                                     </button>
@@ -414,22 +460,22 @@ function Home({ theme, toggleTheme }) {
                 />
 
                 <div className="flashRow">
-                    <button className="btn" onClick={handleCreateSync}>
+                    <button className="btn" onClick={handleCreateSync} disabled={syncBusy}>
                         ✨ Create
                     </button>
-                    <button className="btn" onClick={handleSaveSync}>
+                    <button className="btn" onClick={handleSaveSync} disabled={syncBusy}>
                         💾 Save
                     </button>
-                    <button className="btn" onClick={handleClearSync}>
+                    <button className="btn" onClick={handleClearSync} disabled={syncBusy}>
                         🚮 Remove
                     </button>
                 </div>
 
                 <div className="flashRow">
-                    <button className="btn" onClick={handleSyncPull}>
+                    <button className="btn" onClick={handleSyncPull} disabled={syncBusy}>
                         ⬇️ Pull
                     </button>
-                    <button className="btn" onClick={handleSyncPush}>
+                    <button className="btn" onClick={handleSyncPush} disabled={syncBusy}>
                         ⬆️ Push
                     </button>
                 </div>
@@ -449,7 +495,7 @@ function Home({ theme, toggleTheme }) {
                         </h3>
 
                         {cat.phrases.map((p, idx) => (
-                            <div className="card" key={idx}>
+                            <div className="card" key={p.id || idx}>
                                 <div className="arabic">{p.arabic}</div>
 
                                 <div className="metaLine">
@@ -475,4 +521,4 @@ function Home({ theme, toggleTheme }) {
 }
 
 export default Home;
-                   
+        
