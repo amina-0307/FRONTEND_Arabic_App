@@ -51,7 +51,7 @@ export function getCombinedPhrases() {
     for (const [cat, items] of Object.entries(byCategory)) {
         if (baseMap.has(cat)) {
             const existing = baseMap.get(cat);
-            existing.phrases = [...items, ...arguments(existing.phrases || [])];
+            existing.phrases = [...items, ...(existing.phrases || [])];
         } else {
             baseMap.set(cat, { category: cat, phrases: items });
         }
