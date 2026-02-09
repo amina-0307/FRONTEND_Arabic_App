@@ -117,7 +117,7 @@ function Home({ theme, toggleTheme }) {
 
     const categoriesForSave = useMemo(() => {
         const names = phrases.map((c) => c.category);
-        return Array.from(new Set(["Saved", "Other", ...names]));
+        return Array.from(new Set(["Other", ...names]));
     }, [phrases]);
 
     useEffect(() => {
