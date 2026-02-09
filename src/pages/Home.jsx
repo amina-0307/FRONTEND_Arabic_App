@@ -237,7 +237,7 @@ function Home({ theme, toggleTheme }) {
         refreshPhrases();
 
         setShowSavePrompt(false);
-        showToast(`Saved to: ${saveCat}`);
+        showToast(`Saved to: ${saveCat} ✅ (Tip: press Push to back up to the cloud)`);
 
         // DEBUG //
         console.log("Saved phrase:", phraseToSave);
@@ -289,10 +289,18 @@ function Home({ theme, toggleTheme }) {
     }
 
     const handleCreateSync = () => {
+        // if a key already exists, warn the user that new key will create new cloud vault //
+        if (syncKeyState && syncKeyState.trim()) {
+            const ok = window.confirm(
+                "You already have a sync code. \n\nCreating a new one will start a NEW cloud backup vault, and you will need to use the NEW code to Pull. \n\nDo you want to create a new sync code?"
+            );
+            if (!ok) return;
+        }
+
         const key = generateSyncKey();
         setSyncKey(key);
         setSyncKeyState(key);
-        syncToast("New sync code created ✨");
+        syncToast("New sync code created ✨ (Copy it somewhere safe)");
     };
 
     const handleSaveSync = () => {
@@ -449,8 +457,22 @@ function Home({ theme, toggleTheme }) {
             </div>
 
             {/* Sync */}
-            <h2 className="h2">☁️ Sync</h2>
+            <h2 className="h2">☁️ Cloud Backup (Sync)</h2>
             <div className="card">
+                <div className="metaLine" style={{ lineHeight: 1.5 }}>
+                    <b>Cloud Backup (Sync):</b><br />
+                    Sync lets you keep your saved phrases safe if you change device or reinstall the app.<br />
+                    <br />
+                    <b>Steps:</b><br />
+                    1. Create a sync code once and save it somewhere safe.<br />
+                    2. When you save new phrases, press <b>Push</b> to upload them to the cloud.<br />
+                    3. On another device, enter the same code and press <b>Pull</b> to get your phrases back.<br />
+                    <br />
+                    ⚠️ Your sync code is the only way to access your cloud backup.
+                </div>
+
+                <div className="hr" />
+
                 <input
                     className="input"
                     style={{ width: "100%", marginTop: 10 }}
@@ -463,9 +485,22 @@ function Home({ theme, toggleTheme }) {
                     <button className="btn" onClick={handleCreateSync} disabled={syncBusy}>
                         ✨ Create
                     </button>
-                    <button className="btn" onClick={handleSaveSync} disabled={syncBusy}>
+
+                    <button className="btn" onClick={handleSaveSync} disabled={syncBusy || !syncKeyState}>
                         💾 Save
                     </button>
+
+                    <button
+                        className="btn"
+                        onClick={() => {
+                            navigator.clipboard.writeText(syncKeyState || "");
+                            syncToast("Sync code copied 📋");
+                        }}
+                        disabled={syncBusy || !syncKeyState}
+                        >
+                            📋 Copy Code
+                    </button>
+
                     <button className="btn" onClick={handleClearSync} disabled={syncBusy}>
                         🚮 Remove
                     </button>
