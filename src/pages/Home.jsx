@@ -88,7 +88,7 @@ function Home({ theme, toggleTheme }) {
                         .some((v) => v.toLowerCase().includes(q))
                 ),
             }))
-            .filter((cat) => cat.phrases.length > 0);
+            .filter((cat) => cat.phrases.length > 0 && cat.category !== "Saved");
     }, [phrases, query]);
 
     const handleJump = (slug) => {
@@ -519,8 +519,10 @@ function Home({ theme, toggleTheme }) {
             </div>
 
             {/* phrasecards */}
-            {filtered.map((cat) => {
-                const slug = slugify(cat.category);
+            {filtered
+                .filter((cat) => cat.category !== "Saved")
+                .map((cat) => {
+                    const slug = slugify(cat.category);
 
                 return (
                     <div key={cat.category} id={`section-${slug}`}>
