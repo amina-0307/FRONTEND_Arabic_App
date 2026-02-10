@@ -1,3 +1,5 @@
+import { toJpegBlob } from "../utils/imageResize";
+
 const BASE = import.meta.env.VITE_BACKEND_URL;
 
 function requireBase() {
@@ -26,21 +28,31 @@ export async function translateText({ text, direction }) {
 }
 
 export async function translateImage({ file, direction }) {
-    requireBase();
+    // convert iPhone image + resize to JPEG //
+    const jpegBlob = await toJpegBlob(file);
 
-    const fd = new FormData();
-    fd.append("image", file);
-    fd.append("direction", direction);
+    // build FormData correctly //
+    const form = new FormData();
+    form.append("image", jpegBlob, "upload.jpg");
+    form.append("direction", direction);
 
+    // send request //
     const res = await fetch(`${BASE}/api/translate-image`, {
         method: "POST",
-        body: fd,
+        body: form,
     });
 
-    const bodyText = await res.text();
+    // read response text FIRSt (FOR DEBUGGING) //
+    let details = "";
+    try {
+        details = await res.text();
+    } catch {}
+
+    // if backend failed, show REAL reason //
     if (!res.ok) {
-        throw new Error(bodyText || "Image translation failed");
+        throw new Error(`Image translate failed (${res.status}): ${details}`);
     }
 
+    // parse JSON only after we know it's ok //
     return JSON.parse(bodyText);
 }
