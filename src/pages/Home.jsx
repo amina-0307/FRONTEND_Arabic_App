@@ -185,18 +185,16 @@ function Home({ theme, toggleTheme }) {
             setShowSavePrompt(false);
             setLoading(true);
 
-            // IMPORTANT: api.js now handles conversion to jpeg via toJpegBlob() //
-            // so send original file //
+            // api.js now handles conversion to jpeg via toJpegBlob() //
             const data = await translateImage({ file, direction });
 
-            setResult(data);
-            incrementUsage();
-
-            // normalise english field so UI + saving is consistent //
             const normalized = {
                 ...data,
                 english: data.english ?? data.translation ?? "",
             };
+
+            setResult(normalized);
+            incrementUsage();
 
             setSaveCat(suggestCategory(normalized) || "Other");
             setShowSavePrompt(true);
@@ -424,9 +422,10 @@ function Home({ theme, toggleTheme }) {
 
                         {/* show correct english for en_to_ar */}
                         <div className="metaLine">
-                            <b>English:</b> {direction === "en_to_ar"
-                                ? inputText.trim()
-                                : (result.english ?? result.translation ?? "")}
+                            <b>English:</b>{""}
+                            {direction === "en_to_ar"
+                                ? (inputText.trim() || result.english || result.translation || "")
+                                : (result.english || result.translation || "")}
                         </div>
 
                         <div className="flashRow">
@@ -441,8 +440,8 @@ function Home({ theme, toggleTheme }) {
                                 onClick={() => 
                                     copy(
                                         direction === "en_to_ar"
-                                            ? inputText.trim()
-                                            : (result.english ?? result.translation ??"")
+                                            ? (inputText.trim() || result.english || result.translation || "")
+                                            : (result.english || result.translation || "")
                                     )
                                 }
                             >
