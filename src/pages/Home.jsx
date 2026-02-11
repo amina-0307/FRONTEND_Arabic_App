@@ -181,21 +181,22 @@ function Home({ theme, toggleTheme }) {
 
         try {
             setErr("");
-            setLoading(true);
             setResult(null);
             setShowSavePrompt(false);
+            setLoading(true);
 
-            // api.js handles converting/resizing to jpeg via JpegBlob //
-            const data = await translateImage({ file: resized, direction });
+            // IMPORTANT: api.js now handles conversion to jpeg via toJpegBlob() //
+            // so send original file //
+            const data = await translateImage({ file, direction });
+
+            setResult(data);
+            incrementUsage();
 
             // normalise english field so UI + saving is consistent //
             const normalized = {
                 ...data,
                 english: data.english ?? data.translation ?? "",
             };
-
-            incrementUsage();
-            setResult(normalized);
 
             setSaveCat(suggestCategory(normalized) || "Other");
             setShowSavePrompt(true);
