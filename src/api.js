@@ -1,4 +1,4 @@
-import { toJpegBlob } from "../utils/imageResize";
+import { toJpegBlob } from "./utils/imageResize.js";
 
 const BASE = import.meta.env.VITE_BACKEND_URL;
 
@@ -28,6 +28,8 @@ export async function translateText({ text, direction }) {
 }
 
 export async function translateImage({ file, direction }) {
+    requireBase();
+
     // convert iPhone image + resize to JPEG //
     const jpegBlob = await toJpegBlob(file);
 
@@ -42,7 +44,7 @@ export async function translateImage({ file, direction }) {
         body: form,
     });
 
-    // read response text FIRSt (FOR DEBUGGING) //
+    // read response text FIRST (for debugging) //
     let details = "";
     try {
         details = await res.text();
@@ -54,5 +56,5 @@ export async function translateImage({ file, direction }) {
     }
 
     // parse JSON only after we know it's ok //
-    return JSON.parse(bodyText);
+    return JSON.parse(details);
 }

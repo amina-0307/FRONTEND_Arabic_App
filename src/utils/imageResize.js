@@ -1,3 +1,4 @@
+// used by api.js to convert --> resized JPEG blob //
 export async function toJpegBlob(file, maxDim = 1280, quality = 0.8) {
     const img = document.createElement("img");
     img.src = URL.createObjectURL(file);
@@ -27,4 +28,11 @@ export async function toJpegBlob(file, maxDim = 1280, quality = 0.8) {
 
     if (!blob) throw new Error("Failed to convert image");
     return blob;
+}
+
+// used by Home.jsx BEFORE calling translateImage() //
+// returns a FILE so current Home.jsx code keeps working unchanged //
+export async function resizeImage(file, maxDim = 1280, quality = 0.8) {
+    const jpegBlob = await toJpegBlob(file, maxDim, quality);
+    return new File([jpegBlob], "upload.jpg", { type: "image/jpeg" });
 }
