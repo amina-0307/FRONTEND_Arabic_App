@@ -7,7 +7,6 @@ import { suggestCategory } from "../utils/categorySuggest";
 import { savePhrase, exportSavedPhrases } from "../utils/savedPhrases";
 
 import { translateText, translateImage } from "../api";
-import { resizeImage } from "../utils/imageResize";
 import { canUseImage, incrementUsage, getUsage, IMAGE_LIMIT } from "../utils/imageCap";
 
 import { syncPull, syncPush } from "../utils/sync";
@@ -151,9 +150,16 @@ function Home({ theme, toggleTheme }) {
         try {
             setLoading(true);
             const data = await translateText({ text, direction });
-            setResult(data);
-            cacheSet(cacheKey, data);
-            setSaveCat(suggestCategory(data) || "Other");
+
+            // normalise english field so UI + saving is consistent //
+            const normalized = {
+                ...data,
+                english: data.english ?? data.translation ?? "",
+            };
+
+            setResult(normalized);
+            cacheSet(cacheKey, normalized);
+            setSaveCat(suggestCategory(normalized) || "Other");
             setShowSavePrompt(true);
         } catch (e) {
             setErr(e?.message || "Something went wrong");
@@ -174,18 +180,27 @@ function Home({ theme, toggleTheme }) {
         }
 
         try {
+            setErr("");
             setLoading(true);
+            setResult(null);
+            setShowSavePrompt(false);
 
-            const resized = await resizeImage(file);
+            // api.js handles converting/resizing to jpeg via JpegBlob //
             const data = await translateImage({ file: resized, direction });
 
-            incrementUsage();
-            setResult(data);
+            // normalise english field so UI + saving is consistent //
+            const normalized = {
+                ...data,
+                english: data.english ?? data.translation ?? "",
+            };
 
-            setSaveCat(suggestCategory(data) || "Other");
+            incrementUsage();
+            setResult(normalized);
+
+            setSaveCat(suggestCategory(normalized) || "Other");
             setShowSavePrompt(true);
-        } catch {
-            setErr("Image translation failed");
+        } catch (e2) {
+            setErr(e2?.message || "Image translation failed");
         } finally {
             setLoading(false);
             e.target.value = "";
@@ -209,7 +224,9 @@ function Home({ theme, toggleTheme }) {
         // for en_to_ar: "english meaning" is what user typed //
         // for ar_to_en: "english meaning" is model output //
         const englishValue =
-            direction === "en_to_ar" ? trimmedInput : (result.english || "");
+            direction === "en_to_ar" 
+                ? trimmedInput
+                : (result.english ?? result.translation ?? result.englishText ?? "");
 
         const phraseToSave = {
             id: crypto.randomUUID(), // helpful for stable rendering/merging //
@@ -224,7 +241,7 @@ function Home({ theme, toggleTheme }) {
 
         // don't save empty junk //
         if (!phraseToSave.arabic || !phraseToSave.english) {
-            console.warn("Not saving: missing arabic/english", {phraseToSave, result, direction, inputText });
+            console.warn("Not saving: missing arabic/english", {phraseToSave, result});
             showToast("Not saved (missing fields)");
             return;
         }
@@ -406,7 +423,9 @@ function Home({ theme, toggleTheme }) {
 
                         {/* show correct english for en_to_ar */}
                         <div className="metaLine">
-                            <b>English:</b> {direction === "en_to_ar" ? inputText.trim() : result.english}
+                            <b>English:</b> {direction === "en_to_ar"
+                                ? inputText.trim()
+                                : (result.english ?? result.translation ?? "")}
                         </div>
 
                         <div className="flashRow">
@@ -416,7 +435,16 @@ function Home({ theme, toggleTheme }) {
                             <button className="btn" onClick={() => copy(result.transliteration)}>
                                 Copy Transliteration
                             </button>
-                            <button className="btn" onClick={() => copy(direction === "en_to_ar" ? inputText.trim() : result.english)}>
+                            <button 
+                                className="btn"
+                                onClick={() => 
+                                    copy(
+                                        direction === "en_to_ar"
+                                            ? inputText.trim()
+                                            : (result.english ?? result.translation ??"")
+                                    )
+                                }
+                            >
                                 Copy English
                             </button>
                         </div>
