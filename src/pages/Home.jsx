@@ -422,7 +422,7 @@ function Home({ theme, toggleTheme }) {
 
                         {/* show correct english for en_to_ar */}
                         <div className="metaLine">
-                            <b>English:</b>{""}
+                            <b>English: </b>{""}
                             {direction === "en_to_ar"
                                 ? (inputText.trim() || result.english || result.translation || "")
                                 : (result.english || result.translation || "")}
