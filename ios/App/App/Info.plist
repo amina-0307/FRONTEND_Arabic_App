@@ -30,7 +30,7 @@
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 
 	<key>LSRequiresIPhoneOS</key>
-	<true />
+	<true/>
 
 	<key>UILaunchStoryboardName</key>
 	<string></string>
@@ -61,11 +61,10 @@
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true />
 
-	<!-- camera + photo permissions (for image translation) -->
-	<key>NSCameraUsageDescription</key>
+	<key>NSCameraUsageDescriptions</key>
 	<string>Used to translate text from images.</string>
 
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Used to select images for translation.</string>
+	<string>Used to select images for translation</string>
 </dict>
 </plist>
