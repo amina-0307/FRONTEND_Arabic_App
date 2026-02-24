@@ -1,28 +1,51 @@
 PODS:
-  - Capacitor (8.0.2):
+  - Capacitor (8.1.0):
     - CapacitorCordova
-  - CapacitorCordova (8.0.2)
-  - CapacitorStatusBar (8.0.0):
+  - CapacitorCordova (8.1.0)
+  - CapacitorStatusBar (8.0.1):
     - Capacitor
+  - CapgoNativePurchases (8.0.23):
+    - Capacitor
+  - PurchasesHybridCommon (17.33.1):
+    - RevenueCat (= 5.57.2)
+  - RevenueCat (5.57.2)
+  - RevenuecatPurchasesCapacitor (12.1.2):
+    - Capacitor
+    - PurchasesHybridCommon (= 17.33.1)
 
 DEPENDENCIES:
-  - "Capacitor (from `../../node_modules/@capacitor/ios`)"
-  - "CapacitorCordova (from `../../node_modules/@capacitor/ios`)"
-  - "CapacitorStatusBar (from `../../node_modules/@capacitor/status-bar`)"
+  - "Capacitor (from `../../node_modules/.pnpm/@capacitor+ios@8.1.0_@capacitor+core@8.1.0/node_modules/@capacitor/ios`)"
+  - "CapacitorCordova (from `../../node_modules/.pnpm/@capacitor+ios@8.1.0_@capacitor+core@8.1.0/node_modules/@capacitor/ios`)"
+  - "CapacitorStatusBar (from `../../node_modules/.pnpm/@capacitor+status-bar@8.0.1_@capacitor+core@8.1.0/node_modules/@capacitor/status-bar`)"
+  - "CapgoNativePurchases (from `../../node_modules/.pnpm/@capgo+native-purchases@8.0.23_@capacitor+core@8.1.0/node_modules/@capgo/native-purchases`)"
+  - "RevenuecatPurchasesCapacitor (from `../../node_modules/.pnpm/@revenuecat+purchases-capacitor@12.1.2_@capacitor+core@8.1.0/node_modules/@revenuecat/purchases-capacitor`)"
+
+SPEC REPOS:
+  trunk:
+    - PurchasesHybridCommon
+    - RevenueCat
 
 EXTERNAL SOURCES:
   Capacitor:
-    :path: "../../node_modules/@capacitor/ios"
+    :path: "../../node_modules/.pnpm/@capacitor+ios@8.1.0_@capacitor+core@8.1.0/node_modules/@capacitor/ios"
   CapacitorCordova:
-    :path: "../../node_modules/@capacitor/ios"
+    :path: "../../node_modules/.pnpm/@capacitor+ios@8.1.0_@capacitor+core@8.1.0/node_modules/@capacitor/ios"
   CapacitorStatusBar:
-    :path: "../../node_modules/@capacitor/status-bar"
+    :path: "../../node_modules/.pnpm/@capacitor+status-bar@8.0.1_@capacitor+core@8.1.0/node_modules/@capacitor/status-bar"
+  CapgoNativePurchases:
+    :path: "../../node_modules/.pnpm/@capgo+native-purchases@8.0.23_@capacitor+core@8.1.0/node_modules/@capgo/native-purchases"
+  RevenuecatPurchasesCapacitor:
+    :path: "../../node_modules/.pnpm/@revenuecat+purchases-capacitor@12.1.2_@capacitor+core@8.1.0/node_modules/@revenuecat/purchases-capacitor"
 
 SPEC CHECKSUMS:
-  Capacitor: cfc1ce4a70dbc19fdc4e66e17808937088029752
-  CapacitorCordova: 921bdb690ebe82421b24fce45552fd3dea2ae43a
-  CapacitorStatusBar: c6fa2d404083e41d145ea56698707a6986d4428b
+  Capacitor: 830fc6ff88e99bb5ba48350f02c01ab01ba3b2b8
+  CapacitorCordova: e8b76fd95fc1e157775abc484c59cc0de464095d
+  CapacitorStatusBar: 7fc9bb6737a29524034dfdc51ae1f1880d972b4d
+  CapgoNativePurchases: 9c372b4a634150acc4958bc48f2eb5526901d58e
+  PurchasesHybridCommon: 9031a433025f7a835f7002e132e3320f41c63b21
+  RevenueCat: 85df7fb6409e6823e24768e8cabf55d03a497355
+  RevenuecatPurchasesCapacitor: d62b5ab31f83e3ab91e6c733c29f3fe8d5f4e582
 
-PODFILE CHECKSUM: ac6ee68a7697e9a04938332b6e56bb9fed834041
+PODFILE CHECKSUM: e93a005903c9aa120ae79606e703d17738348e35
 
 COCOAPODS: 1.16.2

@@ -143,6 +143,7 @@ a {
   border: 1px solid var(--control-border);
   background: var(--control-bg);
   color: var(--text);
+  font-size: 16px;
 }
 
 .select {
@@ -152,6 +153,12 @@ a {
   border: 1px solid var(--control-border);
   background: var(--control-bg);
   color: var(--text);
+  font-size: 16px;
+}
+
+input,
+textarea,
+select {
   font-size: 16px;
 }
 

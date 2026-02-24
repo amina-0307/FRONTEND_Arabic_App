@@ -17,6 +17,8 @@
     "@capacitor/core": "^8.0.2",
     "@capacitor/ios": "^8.0.2",
     "@capacitor/status-bar": "^8.0.0",
+    "@capgo/native-purchases": "^8.0.23",
+    "@revenuecat/purchases-capacitor": "^12.1.2",
     "axios": "^1.7.7",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
