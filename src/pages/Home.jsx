@@ -1,6 +1,13 @@
 import { useMemo, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
+import { Capacitor } from "@capacitor/core";
+import { Purchases } from "@revenuecat/purchases-capacitor";
+
+import PaywallModal from "../components/PaywallModal";
+
+import { getOfferings, purchasePackage, restore } from "../revenuecat/purchases";
+
 import { getCombinedPhrases } from "../utils/phraseData"; // live categories //
 import { cacheGet, cacheSet } from "../utils/translateCache";
 import { suggestCategory } from "../utils/categorySuggest";
@@ -129,6 +136,124 @@ function Home({ theme, toggleTheme }) {
 
     const copy = (text) => navigator.clipboard.writeText(text || "");
 
+    // RevenueCat access + paywall state //
+    const [hasBasicAccess, setHasBasicAccess] = useState(false);
+    const [hasProAccess, setHasProAccess] = useState(false);
+
+    const [paywallOpen, setPaywallOpen] = useState(false);
+    const [paywallPlan, setPaywallPlan] = useState("basic");
+    const [paywallPriceText, setPaywallPriceText] = useState("");
+    const [paywallBusy, setPaywallBusy] = useState(false);
+    const [paywallErr, setPaywallErr] = useState("");
+
+    const [basicPkg, setBasicPkg] = useState(null);
+    const [proPkg, setProPkg] = useState(null);
+
+    async function refreshAccess() {
+        if (Capacitor.getPlatform() === "web") {
+            setHasBasicAccess(false);
+            setHasProAccess(false);
+            return;
+        }
+
+        const info = await Purchases.getCustomerInfo();
+        const active = info?.entitlements?.active ?? {};
+
+        // make sure entitlements are EXACT same as in RevenueCat - case-sensitive //
+        const pro = Boolean(active["pro"]);
+        const basic = pro || Boolean(active["basic"]);
+
+        setHasProAccess(pro);
+        setHasBasicAccess(basic);
+    }
+
+    async function loadPackages() {
+        if (Capacitor.getPlatform() === "web") return;
+
+        const offerings = await getOfferings();
+        const current = offerings?.current;
+        const pkgs = current?.availablePackages || [];
+
+        const foundBasic = 
+            pkgs.find((p) => (p.product?.identifier || "").toLowerCase().includes("basic")) ||
+            pkgs.find((p) => (p.identifier || "").toLowerCase().includes("basic")) ||
+            null;
+
+        const foundPro =
+            pkgs.find((p) => (p.product?.identifier || "").toLowerCase().includes("pro")) ||
+            pkgs.find((p) => (p.identifier || "").toLowerCase().includes("pro")) ||
+            null;
+
+        setBasicPkg(foundBasic);
+        setProPkg(foundPro);
+    }
+
+    function priceFor(plan) {
+        const pkg = plan === "pro" ? proPkg : basicPkg;
+        return pkg?.product?.priceString ? `${pkg.product.priceString}/month`: "";
+    }
+
+    async function openPaywall(plan) {
+        setPaywallPlan(plan);
+        setPaywallErr("");
+        setPaywallPriceText("");
+        setPaywallOpen(true);
+
+        try {
+            await loadPackages();
+            setPaywallPriceText(priceFor(plan));
+        } catch (e) {
+            console.warn("Could not load offerings:", e);
+        }
+    }
+
+    function closePaywall() {
+        setPaywallOpen(false);
+        setPaywallErr("");
+        setPaywallBusy(false);
+    }
+
+    async function handleSubscribe() {
+        setPaywallBusy(true);
+        setPaywallErr("");
+
+        try {
+            if (!basicPkg && !proPkg) await loadPackages();
+            const pkg = paywallPlan === "pro" ? proPkg : basicPkg;
+            if (!pkg) throw new Error("Subscription package not found in Offerings");
+
+            await purchasePackage(pkg);
+            await refreshAccess();
+            closePaywall();
+        } catch (e) {
+            setPaywallErr(e?.message || "Purchase failed");
+        } finally {
+            setPaywallBusy(false);
+        }
+    }
+
+    async function handleRestorePurchases() {
+        setPaywallBusy(true);
+        setPaywallErr("");
+
+        try {
+            await restore();
+            await refreshAccess();
+            closePaywall();
+        } catch (e) {
+            setPaywallErr(e?.message || "Restore failed");
+        } finally {
+            setPaywallBusy(false);
+        }
+    }
+
+    // load access + offerings on count //
+    useEffect(() => {
+        refreshAccess().catch(console.error);
+        loadPackages().catch(() => {});
+    }, []);
+
+    // translator handlers //
     async function handleTranslate() {
         setErr("");
         setResult(null);
@@ -136,6 +261,12 @@ function Home({ theme, toggleTheme }) {
 
         const text = inputText.trim();
         if (!text) return;
+
+        // if user does not have Basic access, open paywall instead of calling API //
+        if (!hasBasicAccess) {
+            openPaywall("basic");
+            return;
+        }
 
         const cacheKey = `${direction}::${text.toLowerCase()}`;
         const cached = cacheGet(cacheKey);
@@ -162,7 +293,15 @@ function Home({ theme, toggleTheme }) {
             setSaveCat(suggestCategory(normalized) || "Other");
             setShowSavePrompt(true);
         } catch (e) {
-            setErr(e?.message || "Something went wrong");
+            const msg = e?.message || "Something went wrong";
+
+            // if backend blocks, show paywall //
+            if (msg.includes("Subscription required") || msg.includes("403")) {
+                openPaywall("basic");
+                return;
+            }
+
+            setErr(msg);
         } finally {
             setLoading(false);
         }
@@ -171,6 +310,13 @@ function Home({ theme, toggleTheme }) {
     async function handleImagePick(e) {
         const file = e.target.files?.[0];
         if (!file) return;
+
+        // Pro required for image translation //
+        if (!hasProAccess) {
+            openPaywall("pro");
+            e.target.value = "";
+            return;
+        }
 
         if (!canUseImage()) {
             const u = getUsage();
@@ -199,7 +345,14 @@ function Home({ theme, toggleTheme }) {
             setSaveCat(suggestCategory(normalized) || "Other");
             setShowSavePrompt(true);
         } catch (e2) {
-            setErr(e2?.message || "Image translation failed");
+            const msg = e2?.message || "Image translation failed";
+
+            if (msg.includes("Subscription required") || msg.includes("403")) {
+                openPaywall("pro");
+                return;
+            }
+
+            setErr(msg);
         } finally {
             setLoading(false);
             e.target.value = "";
@@ -280,7 +433,7 @@ function Home({ theme, toggleTheme }) {
             await syncPull(syncKeyState);
 
             // after pulling into storage //
-            window.dispatchEvent(new Event("savedPhraseUpdated"));
+            window.dispatchEvent(new Event("savedPhrasesUpdated"));
             refreshPhrases();
 
             syncToast("Pulled from cloud ✅");
@@ -333,6 +486,18 @@ function Home({ theme, toggleTheme }) {
     // UI //
     return (
         <div className="page">
+            {/* Paywall Modal */}
+            <PaywallModal
+                open={paywallOpen}
+                plan={paywallPlan}
+                priceText={paywallPriceText}
+                loading={paywallBusy}
+                error={paywallErr}
+                onClose={closePaywall}
+                onSubscribe={handleSubscribe}
+                onRestore={handleRestorePurchases}
+            />
+
             {/* search + jump */}
             <div className="top-controls">
                 <input
@@ -355,134 +520,161 @@ function Home({ theme, toggleTheme }) {
                 </select>
             </div>
 
-            <h1 className="h1">Arabic Phrasebook</h1>
+            <h1 className="h1">Arabic Phrases & AI Translator</h1>
             <div className="hr" />
 
             <h2 className="h2">🧠 AI Translator</h2>
 
-            {/* translator card */}
-            <div className="card">
-                <div className="flashRow" style={{ justifyContent: "flex-start" }}>
-                    <button 
-                        className={`btn ${direction === "en_to_ar" ? "btnActive" : ""}`}
-                        onClick={() => setDirection("en_to_ar")}
-                    >
-                        English → Arabic
-                    </button>
-                    <button
-                        className={`btn ${direction === "ar_to_en" ? "btnActive" : ""}`}
-                        onClick={() => setDirection("ar_to_en")}
-                    >
-                        Arabic → English
-                    </button>
-                </div>
+            {/* translator card (gated)*/}
+            {hasBasicAccess ? (
+                <div className="card">
+                    <div className="flashRow" style={{ justifyContent: "flex-start" }}>
+                        <button 
+                            className={`btn ${direction === "en_to_ar" ? "btnActive" : ""}`}
+                            onClick={() => setDirection("en_to_ar")}
+                        >
+                            English → Arabic
+                        </button>
+                        <button
+                            className={`btn ${direction === "ar_to_en" ? "btnActive" : ""}`}
+                            onClick={() => setDirection("ar_to_en")}
+                        >
+                            Arabic → English
+                        </button>
+                    </div>
 
-                <div className="translatorRow" style={{ marginTop: 12 }}>
-                    <input
-                        className="input"
-                        placeholder={
-                            direction === "en_to_ar" ? "Type English..." : "اكتب بالعربي..."
-                        }
-                        value={inputText}
-                        onChange={(e) => setInputText(e.target.value)}
-                        onKeyDown={(e) => e.key === "Enter" && handleTranslate()}
-                    />
-
-                    <label className="iconBtn" title="Upload image">
-                        📸
+                    <div className="translatorRow" style={{ marginTop: 12 }}>
                         <input
-                            type="file"
-                            accept="image/*"
-                            hidden onChange={handleImagePick}
+                            className="input"
+                            placeholder={
+                                direction === "en_to_ar" ? "Type English..." : "اكتب بالعربي..."
+                            }
+                            value={inputText}
+                            onChange={(e) => setInputText(e.target.value)}
+                            onKeyDown={(e) => e.key === "Enter" && handleTranslate()}
                         />
-                    </label>
-                </div>
 
-                <div className="flashRow" style={{ justifyContent: "flex-start" }}>
-                    <button className="btn" onClick={handleTranslate} disabled={loading}>
-                        {loading ? "Translating..." : "Translate"}
-                    </button>
-                    <button className="btn" onClick={handleClear}>
-                        Clear
-                    </button>
-                </div>
+                        {/* 📸 only for Pro */}
+                        {hasProAccess && (
+                            <label className="iconBtn" title="Upload image">
+                                📸
+                                <input type="file" accept="image/*" hidden onChange={handleImagePick} />
+                            </label>
+                        )}
+                    </div>
 
-                {err && <div className="metaLine">❌ {err}</div>}
-                {savedToast && <div className="metaLine">✅ {savedToast}</div>}
+                    <div className="flashRow" style={{ justifyContent: "flex-start" }}>
+                        <button className="btn" onClick={handleTranslate} disabled={loading}>
+                            {loading ? "Translating..." : "Translate"}
+                        </button>
+                        <button className="btn" onClick={handleClear}>
+                            Clear
+                        </button>
 
-                {result && (
-                    <>
-                        <div className="hr" />
-                        <div className="arabic" style={{ textAlign: "center" }}>
-                            {result.arabic}
-                        </div>
-                        <div className="metaLine">
-                            <b>Transliteration:</b> {result.transliteration}
-                        </div>
+                        {/* upsell button */}
+                        {!hasProAccess && (
+                            <button className="btn" onClick={() => openPaywall("pro")} disabled={loading}>
+                                Upgrade to Pro 📸
+                            </button>
+                        )}
+                    </div>
+
+                    {err && <div className="metaLine">❌ {err}</div>}
+                    {savedToast && <div className="metaLine">✅ {savedToast}</div>}
+
+                    {result && (
+                        <>
+                            <div className="hr" />
+                            <div className="arabic" style={{ textAlign: "center" }}>
+                                {result.arabic}
+                            </div>
+                            <div className="metaLine">
+                                <b>Transliteration:</b> {result.transliteration}
+                            </div>
 
                         {/* show correct english for en_to_ar */}
-                        <div className="metaLine">
-                            <b>English: </b>{""}
-                            {direction === "en_to_ar"
-                                ? (inputText.trim() || result.english || result.translation || "")
-                                : (result.english || result.translation || "")}
-                        </div>
+                            <div className="metaLine">
+                                <b>English: </b>{""}
+                                {direction === "en_to_ar"
+                                    ? (inputText.trim() || result.english || result.translation || "")
+                                    : (result.english || result.translation || "")}
+                            </div>
 
-                        <div className="flashRow">
-                            <button className="btn" onClick={() => copy(result.arabic)}>
-                                Copy Arabic
-                            </button>
-                            <button className="btn" onClick={() => copy(result.transliteration)}>
-                                Copy Transliteration
-                            </button>
-                            <button 
-                                className="btn"
-                                onClick={() => 
-                                    copy(
-                                        direction === "en_to_ar"
-                                            ? (inputText.trim() || result.english || result.translation || "")
-                                            : (result.english || result.translation || "")
-                                    )
-                                }
-                            >
-                                Copy English
-                            </button>
-                        </div>
-
-                        {showSavePrompt && (
-                            <>
-                                <div className="hr" />
-                                <select
-                                    className="select"
-                                    value={saveCat}
-                                    onChange={(e) => setSaveCat(e.target.value)}
+                            <div className="flashRow">
+                                <button className="btn" onClick={() => copy(result.arabic)}>
+                                    Copy Arabic
+                                </button>
+                                <button className="btn" onClick={() => copy(result.transliteration)}>
+                                    Copy Transliteration
+                                </button>
+                                <button 
+                                    className="btn"
+                                    onClick={() => 
+                                        copy(
+                                            direction === "en_to_ar"
+                                                ? (inputText.trim() || result.english || result.translation || "")
+                                                : (result.english || result.translation || "")
+                                        )
+                                    }
                                 >
-                                    {categoriesForSave.map((c) => (
-                                        <option key={c} value={c}>
-                                            {c}
-                                        </option>
-                                    ))}
-                                </select>
+                                    Copy English
+                                </button>
+                            </div>
 
-                                <div className="flashRow">
-                                    <button
-                                        className="btn"
-                                        onClick={handleSave}
+                            {showSavePrompt && (
+                                <>
+                                    <div className="hr" />
+                                    <select
+                                        className="select"
+                                        value={saveCat}
+                                        onChange={(e) => setSaveCat(e.target.value)}
                                     >
-                                        💾 Save
-                                    </button>
-                                    <button 
-                                        className="btn"
-                                        onClick={() => setShowSavePrompt(false)}
-                                    >
-                                        🙅🏽 Don't save
-                                    </button>
-                                </div>
-                            </>
-                        )}
-                    </>
+                                        {categoriesForSave.map((c) => (
+                                            <option key={c} value={c}>
+                                                {c}
+                                            </option>
+                                        ))}
+                                    </select>
+
+                                    <div className="flashRow">
+                                        <button
+                                            className="btn"
+                                            onClick={handleSave}
+                                        >
+                                            💾 Save
+                                        </button>
+                                        <button 
+                                            className="btn"
+                                            onClick={() => setShowSavePrompt(false)}
+                                        >
+                                            🙅🏽 Don't save
+                                        </button>
+                                    </div>
+                                </>
+                            )}
+                        </>
+                    )}
+                </div>
+                ) : (
+                    <div className="card">
+                        <div className="metaLine" style={{ textAlign: "center" }}>
+                            🔒 AI Translator is locked
+                        </div>
+
+                        <div className="flashRow" style={{ justifyContent: "center", gap: 10 }}>
+                            <button className="btn" onClick={() => openPaywall("basic")}>
+                                Unlock AI Translator
+                            </button>
+                            <button className="btn" onClick={() => openPaywall("pro")}>
+                                Upgrade to Pro
+                            </button>
+                        </div>
+
+                        <div className="metaLine" style={{ textAlign: "center", marginTop: 10}}>
+                            Already subscribed? Tap either button, then use <b>Restore Purchases</b>.
+                        </div>
+                    </div>
                 )}
-            </div>
 
             {/* Sync */}
             <h2 className="h2">☁️ Cloud Backup (Sync)</h2>

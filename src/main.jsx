@@ -5,11 +5,12 @@ import "./style.css";
 
 import { Capacitor } from "@capacitor/core";
 import { StatusBar } from "@capacitor/status-bar";
-
 import { initRevenueCat } from "./revenuecat/purchases";
 
 async function initNativeStuff() {
-  if (Capacitor.getPlatform() === "ios") {
+  const platform = Capacitor.getPlatform();
+
+  if (platform === "ios") {
     try {
       await StatusBar.setOverlaysWebView({ overlay: false });
     } catch (e) {
@@ -17,15 +18,19 @@ async function initNativeStuff() {
     }
   }
 
-  // initialize RevenueCat on native platforms //
-  try {
-    await initRevenueCat();
-  } catch (err) {
-    console.error("RevenueCat init failed:", err);
+  //configure RevenueCat ONCE per app launch (native only) //
+  if (platform !== "web") {
+    try {
+      await initRevenueCat();
+    } catch (err) {
+      console.error("RevenueCat init failed:", err);
+    }
   }
 }
 
-// run once on startup //
+// start native init //
+initNativeStuff();
+
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <App />
