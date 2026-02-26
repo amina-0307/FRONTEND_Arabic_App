@@ -57,7 +57,7 @@ export default function PaywallModal({
             >
                 <div style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
                     <div>
-                        <div style={{ fontSize: 18, fontWeight: 800 }}>{title}</div>
+                        <div style={{ fontSize: 14, fontWeight: 800 }}>{title}</div>
                         <div className="metaLine" style={{ marginTop: 6 }}>
                             {subtitle}
                         </div>
