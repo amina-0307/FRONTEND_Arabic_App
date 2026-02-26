@@ -2,7 +2,7 @@ import { Capacitor } from "@capacitor/core";
 import { Purchases } from "@revenuecat/purchases-capacitor";
 import { toJpegBlob } from "./utils/imageResize.js";
 
-const BASE = import .meta.env.VITE_BACKEND_URL;
+const BASE = import.meta.env.VITE_BACKEND_URL;
 
 function requireBase() {
     if (!BASE) {
@@ -21,7 +21,7 @@ async function getRcAppUserId() {
         const result = await Purchases.getAppUserId?.();
 
         if (typeof result === "string") return result;
-        if (result && typeof result.appuserID === "string") return result.appUserID;
+        if (result && typeof result.appUserID === "string") return result.appUserID;
 
         // fallback //
         const info = await Purchases.getCustomerInfo();
@@ -46,7 +46,7 @@ export async function translateText({ text, direction }) {
     const res = await fetch(`${BASE}/api/translate`, {
         method: "POST",
         headers: {
-            "Content-Type": "application.json",
+            "Content-Type": "application/json",
             ...(appUserId ? { "x-rc-app-user-id": appUserId } : {}),
         },
         body: JSON.stringify({ text, direction }),
@@ -74,7 +74,7 @@ export async function translateImage({ file, direction }) {
     const res = await fetch(`${BASE}/api/translate-image`, {
         method: "POST",
         headers: {
-            ...BASE(appUserId ? { "x-rc-app-user-id": appUserId } : {}),
+            ...(appUserId ? { "x-rc-app-user-id": appUserId } : {}),
         },
         body: form,
     });

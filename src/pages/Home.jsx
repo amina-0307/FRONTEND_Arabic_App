@@ -156,15 +156,20 @@ function Home({ theme, toggleTheme }) {
             return;
         }
 
-        const info = await Purchases.getCustomerInfo();
-        const active = info?.entitlements?.active ?? {};
+        try {
+            const info = await Purchases.getCustomerInfo();
+            const active = info?.entitlements?.active ?? {};
 
-        // make sure entitlements are EXACT same as in RevenueCat - case-sensitive //
-        const pro = Boolean(active["pro"]);
-        const basic = pro || Boolean(active["basic"]);
+            const pro = Boolean(active["pro"]);
+            const basic = pro || Boolean(active["basic"]);
 
-        setHasProAccess(pro);
-        setHasBasicAccess(basic);
+            setHasProAccess(pro);
+            setHasBasicAccess(basic);
+        } catch (e) {
+            console.warn("RevenueCat not ready yet:", e);
+            setHasBasicAccess(false);
+            setHasProAccess(false);
+        }
     }
 
     async function loadPackages() {
@@ -200,12 +205,29 @@ function Home({ theme, toggleTheme }) {
         setPaywallOpen(true);
 
         try {
-            await loadPackages();
-            setPaywallPriceText(priceFor(plan));
-        } catch (e) {
-            console.warn("Could not load offerings:", e);
-        }
+            const offerings = await getOfferings();
+            const current = offerings?.current;
+            const pkgs = current?.availablePackages || [];
+
+            const foundBasic =
+                pkgs.find(p => (p.product?.identifier || "").toLowerCase().includes("basic")) ||
+                pkgs.find(p => (p.identifier || "").toLowerCase().includes("basic")) ||
+                null;
+            
+            const foundPro =
+                pkgs.find(p => (p.product?.identifier || "").toLowerCase().includes("pro")) ||
+                pkgs.find(p => (p.identifier || "").toLowerCase().includes("pro")) ||
+                null;
+
+            setBasicPkg(foundBasic);
+            setProPkg(foundPro);
+
+            const pkg = plan === "pro" ? foundPro : foundBasic;
+            setPaywallPriceText(pkg?.product?.priceString ? `${pkg.product.priceString}/month`: "");
+    } catch (e) {
+        console.warn("Could not load offerings:", e);
     }
+}
 
     function closePaywall() {
         setPaywallOpen(false);
