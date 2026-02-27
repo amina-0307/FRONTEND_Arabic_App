@@ -179,15 +179,13 @@ function Home({ theme, toggleTheme }) {
         const current = offerings?.current;
         const pkgs = current?.availablePackages || [];
 
-        const foundBasic = 
-            pkgs.find((p) => (p.product?.identifier || "").toLowerCase().includes("basic")) ||
-            pkgs.find((p) => (p.identifier || "").toLowerCase().includes("basic")) ||
-            null;
+        const foundBasic = pkgs.find(
+            (p) => (p.product?.identifier === "ai_translator_monthly"
+        ) | null);
 
-        const foundPro =
-            pkgs.find((p) => (p.product?.identifier || "").toLowerCase().includes("pro")) ||
-            pkgs.find((p) => (p.identifier || "").toLowerCase().includes("pro")) ||
-            null;
+        const foundPro = pkgs.find(
+            (p) => (p.product?.identifier === "ai_translator_pro_monthly"
+        ) || null);
 
         setBasicPkg(foundBasic);
         setProPkg(foundPro);
