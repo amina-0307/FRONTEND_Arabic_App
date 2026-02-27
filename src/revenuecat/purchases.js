@@ -13,7 +13,7 @@ async function ensureConfigured() {
     if (platform === "web") return;
 
     // if a configure is already done or in progress, wait for it //
-    if (configurepromise) return configurePromise;
+    if (configurePromise) return configurePromise;
 
     configurePromise = (async () => {
         await Purchases.setLogLevel(LOG_LEVEL.DEBUG);
