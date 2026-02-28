@@ -136,6 +136,9 @@ function Home({ theme, toggleTheme }) {
 
     const copy = (text) => navigator.clipboard.writeText(text || "");
 
+    const BASIC_PRODUCT_ID = "ai_translator_monthly";
+    const PRO_PRODUCT_ID = "ai_translator_pro_monthly";
+
     // RevenueCat access + paywall state //
     const [hasBasicAccess, setHasBasicAccess] = useState(false);
     const [hasProAccess, setHasProAccess] = useState(false);
@@ -179,16 +182,13 @@ function Home({ theme, toggleTheme }) {
         const current = offerings?.current;
         const pkgs = current?.availablePackages || [];
 
-        const foundBasic = pkgs.find(
-            (p) => (p.product?.identifier === "ai_translator_monthly"
-        ) | null);
-
-        const foundPro = pkgs.find(
-            (p) => (p.product?.identifier === "ai_translator_pro_monthly"
-        ) || null);
+        const foundBasic = pkgs.find((p) => p?.product?.identifier === BASIC_PRODUCT_ID) || null;
+        const foundPro = pkgs.find((p) => p?.product?.identifier === PRO_PRODUCT_ID) || null;
 
         setBasicPkg(foundBasic);
         setProPkg(foundPro);
+
+        return { foundBasic, foundPro };
     }
 
     function priceFor(plan) {
@@ -203,29 +203,15 @@ function Home({ theme, toggleTheme }) {
         setPaywallOpen(true);
 
         try {
-            const offerings = await getOfferings();
-            const current = offerings?.current;
-            const pkgs = current?.availablePackages || [];
-
-            const foundBasic =
-                pkgs.find(p => (p.product?.identifier || "").toLowerCase().includes("basic")) ||
-                pkgs.find(p => (p.identifier || "").toLowerCase().includes("basic")) ||
-                null;
-            
-            const foundPro =
-                pkgs.find(p => (p.product?.identifier || "").toLowerCase().includes("pro")) ||
-                pkgs.find(p => (p.identifier || "").toLowerCase().includes("pro")) ||
-                null;
-
-            setBasicPkg(foundBasic);
-            setProPkg(foundPro);
-
-            const pkg = plan === "pro" ? foundPro : foundBasic;
-            setPaywallPriceText(pkg?.product?.priceString ? `${pkg.product.priceString}/month`: "");
-    } catch (e) {
-        console.warn("Could not load offerings:", e);
+            if (!basicPkg || !proPkg) {
+                await loadPackages();
+            }
+            setPaywallPriceText(priceFor(plan) || "");
+        } catch (e) {
+            console.warn("Could not load offerings:", e);
+            setPaywallErr(e?.message || "Could not load offerings");
+        }
     }
-}
 
     function closePaywall() {
         setPaywallOpen(false);
@@ -795,6 +781,7 @@ function Home({ theme, toggleTheme }) {
             </div>
         </div>
     );
+
 }
 
 export default Home;

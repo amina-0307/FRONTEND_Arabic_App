@@ -20,19 +20,21 @@ async function initNativeStuff() {
 
   //configure RevenueCat ONCE per app launch (native only) //
   if (platform !== "web") {
-    try {
-      await initRevenueCat();
-    } catch (err) {
-      console.error("RevenueCat init failed:", err);
-    }
+    await initRevenueCat();
   }
 }
 
-// start native init //
-initNativeStuff();
+(async () => {
+  try {
+    await initNativeStuff(); // waits until RevenueCat is configured //
+  } catch (e) {
+    console.error("Native init failed:", e);
+  }
 
-ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
+  // start native init //
+  ReactDOM.createRoot(document.getElementById("root")).render(
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>
+  );
+})();
